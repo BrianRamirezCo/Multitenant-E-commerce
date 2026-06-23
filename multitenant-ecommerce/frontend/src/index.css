@@ -1,0 +1,183 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * ============================================================================
+ *  THEME SYSTEM  --  WHITE-LABEL CORE
+ * ============================================================================
+ *
+ * Each tenant picks one of the available themes. A theme is just a set of CSS
+ * variables applied via a data-theme attribute on <html>. shadcn/ui components
+ * read these variables, so switching the theme restyles the ENTIRE storefront
+ * with no component changes.
+ *
+ * Themes:
+ *   - minimal       : tech / dark-accent, clean (Nexora-style)
+ *   - natural       : warm beige / organic (Navo-style)
+ *   - lavender      : soft purple / friendly (Klik-style)
+ *   - premium-dark  : NOVA-style dark elegant (premium / tech). Gated to higher plans.
+ *   - premium-light : NOVA-style white base (premium / tech). Gated to higher plans.
+ *
+ * On top of a theme, a tenant on Growth/Premium can override --primary with a
+ * custom color (handled at runtime by useTenantTheme).
+ *
+ * Variables are HSL channels (without hsl()) so Tailwind can apply opacity.
+ */
+
+@layer base {
+  /* ---- Default / fallback (minimal) ---- */
+  :root,
+  [data-theme="minimal"] {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 4%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 4%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 4%;
+    --primary: 262 83% 58%; /* violet accent */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 5% 96%;
+    --secondary-foreground: 240 6% 10%;
+    --muted: 240 5% 96%;
+    --muted-foreground: 240 4% 46%;
+    --accent: 240 5% 96%;
+    --accent-foreground: 240 6% 10%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 6% 90%;
+    --input: 240 6% 90%;
+    --ring: 262 83% 58%;
+    --radius: 0.75rem;
+
+    --font-display: "Clash Display", "Space Grotesk", sans-serif;
+    --font-body: "Satoshi", system-ui, sans-serif;
+  }
+
+  /* ---- Natural (warm beige / organic) ---- */
+  [data-theme="natural"] {
+    --background: 40 30% 98%;
+    --foreground: 30 12% 16%;
+    --card: 0 0% 100%;
+    --card-foreground: 30 12% 16%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 30 12% 16%;
+    --primary: 28 25% 35%; /* warm taupe */
+    --primary-foreground: 40 30% 98%;
+    --secondary: 36 22% 92%;
+    --secondary-foreground: 30 12% 16%;
+    --muted: 36 22% 94%;
+    --muted-foreground: 30 8% 42%;
+    --accent: 80 18% 88%; /* soft sage */
+    --accent-foreground: 30 12% 16%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 40 30% 98%;
+    --border: 36 18% 86%;
+    --input: 36 18% 86%;
+    --ring: 28 25% 35%;
+    --radius: 0.5rem;
+
+    --font-display: "Fraunces", Georgia, serif;
+    --font-body: "Satoshi", system-ui, sans-serif;
+  }
+
+  /* ---- Lavender (soft purple / friendly) ---- */
+  [data-theme="lavender"] {
+    --background: 270 40% 99%;
+    --foreground: 270 20% 18%;
+    --card: 0 0% 100%;
+    --card-foreground: 270 20% 18%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 270 20% 18%;
+    --primary: 265 60% 64%; /* lavender */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 270 40% 96%;
+    --secondary-foreground: 270 20% 18%;
+    --muted: 270 30% 96%;
+    --muted-foreground: 270 10% 48%;
+    --accent: 150 35% 90%; /* mint accent */
+    --accent-foreground: 270 20% 18%;
+    --destructive: 0 75% 58%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 270 25% 91%;
+    --input: 270 25% 91%;
+    --ring: 265 60% 64%;
+    --radius: 1rem;
+
+    --font-display: "Cabinet Grotesk", "Space Grotesk", sans-serif;
+    --font-body: "Satoshi", system-ui, sans-serif;
+  }
+
+  /* ---- Premium Dark (NOVA-style, dark elegant) ---- */
+  [data-theme="premium-dark"] {
+    --background: 0 0% 4%; /* near-black #0A0A0A */
+    --foreground: 0 0% 98%;
+    --card: 0 0% 7%; /* slightly lighter cards */
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 7%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 100%; /* white accent (Nothing/Apple style) */
+    --primary-foreground: 0 0% 7%; /* near-black text on white buttons */
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 0 0% 90%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 55%;
+    --accent: 0 0% 14%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 16%;
+    --input: 0 0% 16%;
+    --ring: 0 0% 100%;
+    --radius: 0.75rem;
+
+    --font-display: "Inter", system-ui, sans-serif;
+    --font-body: "Inter", system-ui, sans-serif;
+  }
+
+  /* ---- Premium Light (NOVA-style, white base) ---- */
+  [data-theme="premium-light"] {
+    --background: 0 0% 100%; /* white */
+    --foreground: 0 0% 7%; /* near-black text */
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 7%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 7%;
+    --primary: 0 0% 9%; /* near-black accent (buttons) */
+    --primary-foreground: 0 0% 100%; /* white text on dark buttons */
+    --secondary: 0 0% 96%; /* very light grey */
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
+    --accent: 0 0% 96%;
+    --accent-foreground: 0 0% 9%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 0 0% 9%;
+    --radius: 0.75rem;
+
+    --font-display: "Inter", system-ui, sans-serif;
+    --font-body: "Inter", system-ui, sans-serif;
+  }
+
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5 {
+    font-family: var(--font-display);
+  }
+}

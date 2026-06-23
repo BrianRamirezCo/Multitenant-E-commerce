@@ -1,0 +1,84 @@
+import { api } from "../../app/api/api";
+import { setCredentials, logout as logoutAction } from "./authSlice";
+
+/**
+ * Auth endpoints. The access token returned by login/register/refresh is stored
+ * in memory (Redux) via setCredentials; the refresh token is an httpOnly cookie
+ * handled by the browser automatically (credentials: 'include' in the base api).
+ */
+export const authApi = api.injectEndpoints({
+  endpoints: (builder) => ({
+    login: builder.mutation({
+      query: (body) => ({ url: "/auth/login", method: "POST", body }),
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          dispatch(
+            setCredentials({ user: data.user, accessToken: data.accessToken }),
+          );
+        } catch {
+          /* handled by the caller */
+        }
+      },
+    }),
+    register: builder.mutation({
+      query: (body) => ({ url: "/auth/register", method: "POST", body }),
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          dispatch(
+            setCredentials({ user: data.user, accessToken: data.accessToken }),
+          );
+        } catch {
+          /* ignore */
+        }
+      },
+    }),
+    // Called on app load to restore a session from the refresh cookie.
+    refresh: builder.mutation({
+      query: () => ({ url: "/auth/refresh", method: "POST" }),
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          dispatch(
+            setCredentials({ user: data.user, accessToken: data.accessToken }),
+          );
+        } catch {
+          /* no valid session */
+        }
+      },
+    }),
+    logout: builder.mutation({
+      query: () => ({ url: "/auth/logout", method: "POST" }),
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+        } finally {
+          dispatch(logoutAction());
+        }
+      },
+    }),
+    // Update the current user's profile (name, phone, address). Refreshes the
+    // user in the auth slice so the prefilled data stays in sync.
+    updateProfile: builder.mutation({
+      query: (body) => ({ url: "/auth/profile", method: "PATCH", body }),
+      async onQueryStarted(_arg, { dispatch, getState, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          const token = getState()?.auth?.accessToken;
+          dispatch(setCredentials({ user: data.user, accessToken: token }));
+        } catch {
+          /* ignore */
+        }
+      },
+    }),
+  }),
+});
+
+export const {
+  useLoginMutation,
+  useRegisterMutation,
+  useRefreshMutation,
+  useLogoutMutation,
+  useUpdateProfileMutation,
+} = authApi;
