@@ -934,4 +934,16 @@ export default {
     aboutHint: 'This is shown on your store\'s "About us" page.',
     saved: "Changes saved",
   },
+  wishlist: {
+    eyebrow: "Your selection",
+    title: "Wishlist",
+    count: "{{count}} item(s)",
+    seoDesc: "Your saved favorite products.",
+    empty: "No favorites yet",
+    emptySub: "Tap the heart on any product to save it here.",
+    browse: "Browse products",
+    loginTitle: "Sign in to see your wishlist",
+    loginSub: "Save the products you like to your account.",
+    loginBtn: "Sign in",
+  },
 };

@@ -72,6 +72,66 @@ export const authApi = api.injectEndpoints({
         }
       },
     }),
+
+    // ---- Wishlist ----
+    // Full product docs of the customer's saved items (for the wishlist page).
+    getWishlist: builder.query({
+      query: () => "/auth/wishlist",
+      providesTags: ["Wishlist"],
+    }),
+    // Add a product. Updates the user's wishlist array in Redux so the heart
+    // flips instantly everywhere it's shown.
+    addToWishlist: builder.mutation({
+      query: (productId) => ({
+        url: `/auth/wishlist/${productId}`,
+        method: "POST",
+      }),
+      invalidatesTags: ["Wishlist"],
+      async onQueryStarted(_arg, { dispatch, getState, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          const state = getState();
+          const token = state?.auth?.accessToken;
+          const user = state?.auth?.user;
+          if (user) {
+            dispatch(
+              setCredentials({
+                user: { ...user, wishlist: data.wishlist },
+                accessToken: token,
+              }),
+            );
+          }
+        } catch {
+          /* ignore */
+        }
+      },
+    }),
+    // Remove a product. Same Redux sync as add.
+    removeFromWishlist: builder.mutation({
+      query: (productId) => ({
+        url: `/auth/wishlist/${productId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Wishlist"],
+      async onQueryStarted(_arg, { dispatch, getState, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          const state = getState();
+          const token = state?.auth?.accessToken;
+          const user = state?.auth?.user;
+          if (user) {
+            dispatch(
+              setCredentials({
+                user: { ...user, wishlist: data.wishlist },
+                accessToken: token,
+              }),
+            );
+          }
+        } catch {
+          /* ignore */
+        }
+      },
+    }),
   }),
 });
 
@@ -81,4 +141,7 @@ export const {
   useRefreshMutation,
   useLogoutMutation,
   useUpdateProfileMutation,
+  useGetWishlistQuery,
+  useAddToWishlistMutation,
+  useRemoveFromWishlistMutation,
 } = authApi;

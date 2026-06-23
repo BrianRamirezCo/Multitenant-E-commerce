@@ -942,4 +942,16 @@ export default {
     aboutHint: 'Esto se muestra en la página "Nosotros" de tu tienda.',
     saved: "Cambios guardados",
   },
+  wishlist: {
+    eyebrow: "Tu selección",
+    title: "Favoritos",
+    count: "{{count}} producto(s)",
+    seoDesc: "Tus productos favoritos guardados.",
+    empty: "Todavía no guardaste favoritos",
+    emptySub: "Tocá el corazón en cualquier producto para guardarlo acá.",
+    browse: "Explorar productos",
+    loginTitle: "Iniciá sesión para ver tus favoritos",
+    loginSub: "Guardá los productos que te gustan en tu cuenta.",
+    loginBtn: "Iniciar sesión",
+  },
 };

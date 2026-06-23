@@ -44,6 +44,7 @@ function publicUser(user) {
     role: user.role,
     isOwner: Boolean(user.isOwner),
     profile: user.profile || null,
+    wishlist: (user.wishlist || []).map((id) => String(id)),
   };
 }
 
@@ -166,4 +167,50 @@ exports.updateProfile = catchAsync(async (req, res) => {
 
   await user.save();
   res.json({ status: "success", user: publicUser(user) });
+});
+
+// GET /auth/wishlist  -> the customer's saved products (full product docs).
+exports.getWishlist = catchAsync(async (req, res) => {
+  const user = await User.findById(req.user._id).populate("wishlist");
+  res.json({
+    status: "success",
+    products: user?.wishlist || [],
+  });
+});
+
+// POST /auth/wishlist/:productId  -> add a product to the wishlist.
+exports.addToWishlist = catchAsync(async (req, res, next) => {
+  const { productId } = req.params;
+  const user = await User.findById(req.user._id);
+  if (!user) return next(new AppError("User not found", 404));
+
+  const already = (user.wishlist || []).some(
+    (id) => String(id) === String(productId),
+  );
+  if (!already) {
+    user.wishlist.push(productId);
+    await user.save();
+  }
+
+  res.json({
+    status: "success",
+    wishlist: user.wishlist.map((id) => String(id)),
+  });
+});
+
+// DELETE /auth/wishlist/:productId  -> remove a product from the wishlist.
+exports.removeFromWishlist = catchAsync(async (req, res, next) => {
+  const { productId } = req.params;
+  const user = await User.findById(req.user._id);
+  if (!user) return next(new AppError("User not found", 404));
+
+  user.wishlist = (user.wishlist || []).filter(
+    (id) => String(id) !== String(productId),
+  );
+  await user.save();
+
+  res.json({
+    status: "success",
+    wishlist: user.wishlist.map((id) => String(id)),
+  });
 });

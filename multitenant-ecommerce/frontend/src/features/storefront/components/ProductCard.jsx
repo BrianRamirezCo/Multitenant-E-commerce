@@ -1,18 +1,30 @@
-import { useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ShoppingCart, Star, Heart } from "lucide-react";
 import { addItem } from "../../cart/cartSlice";
+import {
+  useAddToWishlistMutation,
+  useRemoveFromWishlistMutation,
+} from "../../auth/authApi";
 import { formatPrice } from "../../../lib/format";
 
 /**
- * Premium product card (NOVA style). Clean light image area with a wishlist
- * heart, then name, star rating, price, and an always-visible "add to cart"
- * button. Themed (CSS vars) + translated. Logic unchanged.
+ * Premium product card (NOVA style). Clean light image area with a FUNCTIONAL
+ * wishlist heart, then name, star rating, price, and an always-visible
+ * "add to cart" button. Themed (CSS vars) + translated.
  */
 export default function ProductCard({ product }) {
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const user = useSelector((s) => s.auth.user);
+  const wishlist = user?.wishlist || [];
+  const isWished = wishlist.some((id) => String(id) === String(product._id));
+
+  const [addToWishlist] = useAddToWishlistMutation();
+  const [removeFromWishlist] = useRemoveFromWishlistMutation();
 
   const hasDiscount =
     product.compareAtPrice && product.compareAtPrice > product.price;
@@ -31,7 +43,16 @@ export default function ProductCard({ product }) {
   const handleWishlist = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    // Placeholder: wishlist not wired yet.
+    // Wishlist requires a logged-in customer.
+    if (!user) {
+      navigate("/store/login");
+      return;
+    }
+    if (isWished) {
+      removeFromWishlist(product._id);
+    } else {
+      addToWishlist(product._id);
+    }
   };
 
   return (
@@ -59,13 +80,17 @@ export default function ProductCard({ product }) {
             </span>
           )}
 
-          {/* Wishlist heart */}
+          {/* Wishlist heart (functional) */}
           <button
             onClick={handleWishlist}
             aria-label="Wishlist"
-            className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-neutral-700 shadow-sm backdrop-blur transition-colors hover:bg-white"
+            className={`absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full shadow-sm backdrop-blur transition-colors ${
+              isWished
+                ? "bg-white text-red-500"
+                : "bg-white/90 text-neutral-700 hover:bg-white hover:text-red-500"
+            }`}
           >
-            <Heart className="h-4 w-4" />
+            <Heart className={`h-4 w-4 ${isWished ? "fill-current" : ""}`} />
           </button>
 
           {/* Out of stock overlay */}

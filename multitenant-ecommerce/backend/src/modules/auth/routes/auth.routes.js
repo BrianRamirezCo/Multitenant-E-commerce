@@ -19,4 +19,9 @@ router.post("/logout", ctrl.logout);
 router.get("/me", protect, ctrl.me);
 router.patch("/profile", protect, ctrl.updateProfile);
 
+// Wishlist (customer's saved products)
+router.get("/wishlist", protect, ctrl.getWishlist);
+router.post("/wishlist/:productId", protect, ctrl.addToWishlist);
+router.delete("/wishlist/:productId", protect, ctrl.removeFromWishlist);
+
 module.exports = router;

@@ -34,6 +34,8 @@ const userSchema = new mongoose.Schema(
         country: { type: String, default: null },
       },
     },
+    // Customer wishlist: product IDs the customer saved (heart button).
+    wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
   },
   { timestamps: true },
 );

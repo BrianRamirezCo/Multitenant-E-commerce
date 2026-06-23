@@ -42,6 +42,7 @@ import AboutPage from "./features/storefront/pages/AboutPage";
 import StoreTermsPage from "./features/storefront/pages/StoreTermsPage";
 import StorePrivacyPage from "./features/storefront/pages/StorePrivacyPage";
 import StoreCookiesPage from "./features/storefront/pages/StoreCookiesPage";
+import WishlistPage from "./features/storefront/pages/WishlistPage";
 
 // ---- Admin ----
 import AdminLayout from "./features/admin/components/AdminLayout";
@@ -139,6 +140,14 @@ export default function App() {
                   />
                   <Route path="deals" element={<DealsPage />} />
                   <Route path="new" element={<NewArrivalsPage />} />
+                  <Route
+                    path="wishlist"
+                    element={
+                      <RequireCustomer>
+                        <WishlistPage />
+                      </RequireCustomer>
+                    }
+                  />
                   <Route path="search" element={<SearchPage />} />
                   <Route path="cart" element={<CartPage />} />
                   <Route path="checkout" element={<CheckoutPage />} />

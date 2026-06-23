@@ -6,6 +6,7 @@ import {
   Search,
   ShoppingCart,
   User,
+  Heart,
   Menu,
   X,
   ChevronDown,
@@ -198,6 +199,13 @@ export default function StorefrontHeader() {
           </div>
 
           <Link
+            to="/store/wishlist"
+            aria-label={t("nav.wishlist")}
+            className="flex h-10 w-10 items-center justify-center rounded-md text-white/80 transition-colors hover:bg-white/10 hover:text-white"
+          >
+            <Heart className="h-5 w-5" />
+          </Link>
+          <Link
             to="/store/account"
             aria-label={t("nav.account")}
             className="flex h-10 w-10 items-center justify-center rounded-md text-white/80 transition-colors hover:bg-white/10 hover:text-white"
@@ -261,6 +269,13 @@ export default function StorefrontHeader() {
               onClick={() => setMobileOpen(false)}
             >
               {t("nav.deals")}
+            </Link>
+            <Link
+              to="/store/wishlist"
+              className="py-3 text-sm font-medium text-white/70 hover:text-white"
+              onClick={() => setMobileOpen(false)}
+            >
+              {t("nav.wishlist")}
             </Link>
             <Link
               to="/store/about"

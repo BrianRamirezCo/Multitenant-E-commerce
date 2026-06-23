@@ -36,6 +36,7 @@ Una sola base de datos; cada documento lleva `tenantId`. Tres pilares:
 
 `backend/src/config/plans.js` es la **fuente de verdad** de los planes (Starter /
 Growth / Premium): precios, límites y features. Se usa en:
+
 - Backend: `middlewares/planGating.js` (`requireFeature`, `enforceLimit`) y
   validaciones de apariencia/onboarding.
 - Frontend: `lib/planClient.js` (espejo) para mostrar/ocultar/bloquear features.
@@ -78,10 +79,10 @@ frontend/src/
 
 ## Rutas del frontend
 
-- `/`               → **landing del SaaS** (plataforma)
-- `/signup`         → **alta de tienda** (plataforma)
-- `/store`          → **storefront** del tenant (tienda del cliente)
-- `/admin`          → **panel de admin** del tenant
+- `/` → **landing del SaaS** (plataforma)
+- `/signup` → **alta de tienda** (plataforma)
+- `/store` → **storefront** del tenant (tienda del cliente)
+- `/admin` → **panel de admin** del tenant
   - `/admin/orders`, `/admin/products`, `/admin/customers`, `/admin/appearance`
 
 > En producción: el apex (`yourapp.com`) sirve la landing; cada subdominio
@@ -91,6 +92,7 @@ frontend/src/
 ## Cómo arrancar
 
 ### Backend
+
 ```bash
 cd backend
 cp .env.example .env      # completá MONGO_URI
@@ -100,6 +102,7 @@ npm run dev
 ```
 
 ### Frontend
+
 ```bash
 cd frontend
 cp .env.example .env
@@ -108,10 +111,12 @@ npm run dev
 ```
 
 ### Probar el aislamiento (dev, sin subdominios)
+
 ```bash
 curl http://localhost:5000/api/products -H "x-tenant-slug: store-a"
 curl http://localhost:5000/api/products -H "x-tenant-slug: store-b"
 ```
+
 Y el test: `cd backend && npm test` (necesita un Mongo de test).
 
 ## Flujo de onboarding (SaaS)
@@ -123,7 +128,6 @@ Y el test: `cd backend && npm test` (necesita un Mongo de test).
    - Plan **pago**: se crea la suscripción de MercadoPago y se difiere el alta al
      webhook (la integración real de MP está marcada como stub en el código).
 4. `POST /onboarding/webhook` ← MercadoPago confirma el pago → provisioning.
-
 
 ## MercadoPago
 
@@ -141,6 +145,7 @@ Dos integraciones implementadas:
    suscripción queda `authorized`. Usa `MP_PLATFORM_TOKEN`.
 
 ### Probar en sandbox
+
 1. Creá una app en MercadoPago Developers y copiá el **Access Token de prueba**
    (`TEST-...`).
 2. Ponelo en el `.env` del backend en `MP_TEST_ACCESS_TOKEN` y `MP_PLATFORM_TOKEN`.

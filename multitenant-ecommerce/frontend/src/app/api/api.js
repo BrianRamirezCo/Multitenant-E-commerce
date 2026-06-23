@@ -43,6 +43,7 @@ export const api = createApi({
     "Return",
     "BannerSettings",
     "StoreSettings",
+    "Wishlist",
   ],
   endpoints: () => ({}),
 });
