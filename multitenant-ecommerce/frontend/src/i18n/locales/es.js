@@ -121,6 +121,8 @@ export default {
     myStore: "Mi Tienda",
     appearance: "Apariencia",
     storeSettings: "Mi tienda",
+    banner: "Banner principal",
+    subscribers: "Suscriptores",
   },
   dashboard: {
     title: "Dashboard",
@@ -884,6 +886,7 @@ export default {
   storefront: { exploreAll: "Ver todo" },
   catgrid: {
     explore: "Explorar",
+    viewAll: "Ver todas las categorías",
   },
   trust: {
     shippingTitle: "Envíos rápidos",
@@ -941,6 +944,23 @@ export default {
       "Contá la historia de tu tienda, qué venden, qué los hace únicos...",
     aboutHint: 'Esto se muestra en la página "Nosotros" de tu tienda.',
     saved: "Cambios guardados",
+    bannerTitle: "Banner destacado (Growth)",
+    bannerHint:
+      "El banner grande de tu página de inicio. Si dejás un campo vacío, se usa el texto por defecto.",
+    bannerLocked:
+      "El banner destacado está disponible en el plan Growth. Mejorá tu plan para personalizarlo.",
+    bannerEyebrow: "Texto pequeño (arriba)",
+    bannerEyebrowPlaceholder: "Tecnología de punta",
+    bannerHeading: "Título",
+    bannerHeadingPlaceholder: "Diseño. Tecnología. Calidad.",
+    bannerSubtitle: "Descripción",
+    bannerSubtitlePlaceholder:
+      "Descubrí nuestra selección de productos premium.",
+    bannerCta: "Texto del botón",
+    bannerCtaPlaceholder: "Ver productos",
+    bannerImage: "Imagen del banner",
+    bannerImageHint:
+      "Recomendado: imagen horizontal (JPG, PNG o WEBP). Si no subís ninguna, se muestra un fondo degradado.",
   },
   wishlist: {
     eyebrow: "Tu selección",
@@ -953,5 +973,17 @@ export default {
     loginTitle: "Iniciá sesión para ver tus favoritos",
     loginSub: "Guardá los productos que te gustan en tu cuenta.",
     loginBtn: "Iniciar sesión",
+  },
+  subscribers: {
+    title: "Suscriptores",
+    subtitle: "Emails suscritos a tu newsletter",
+    export: "Exportar CSV",
+    email: "Email",
+    date: "Fecha",
+    empty: "Todavía no tenés suscriptores",
+    emptySub: "Cuando alguien se suscriba desde tu tienda, aparecerá acá.",
+    loadError: "No se pudieron cargar los suscriptores",
+    lockedTitle: "Función del plan Growth",
+    lockedSub: "Mejorá tu plan para capturar y gestionar suscriptores.",
   },
 };

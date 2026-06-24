@@ -5,13 +5,13 @@ import { useTranslation } from "react-i18next";
 import { Instagram, CreditCard } from "lucide-react";
 
 /**
- * Premium storefront footer — always dark (NOVA style), regardless of theme.
- * Brand block + link columns + payment-methods block + social icons
- * (Instagram + WhatsApp) + copyright.
+ * Premium storefront footer. Always a dark surface, but the shade depends on the
+ * plan: Starter gets a sober dark-grey footer, Growth/Premium get near-black
+ * (the NOVA look). Brand block + link columns + payment-methods block + social
+ * icons (Instagram + WhatsApp) + copyright.
  *
  * Socials read from tenant.social (instagram, whatsapp). Each icon only renders
- * if its value is set, so an empty store shows none. (Configurable from the
- * admin — wired next.)
+ * if its value is set, so an empty store shows none.
  */
 
 // Simple WhatsApp glyph (lucide doesn't ship a WhatsApp icon).
@@ -34,14 +34,18 @@ export default function StorefrontFooter() {
   const year = new Date().getFullYear();
   const [logoOk, setLogoOk] = useState(true);
 
-  // Social links from the tenant (configurable from the admin — wired next).
+  const plan = tenant?.plan || "starter";
+  // Starter -> dark grey; Growth/Premium -> near-black (NOVA).
+  const isStarter = plan === "starter";
+  const surface = isStarter ? "bg-neutral-800" : "bg-neutral-950";
+
+  // Social links from the tenant.
   const social = tenant?.social || {};
   const instagramUrl = social.instagram
     ? social.instagram.startsWith("http")
       ? social.instagram
       : `https://instagram.com/${social.instagram.replace(/^@/, "")}`
     : null;
-  // WhatsApp: store a phone number, open a chat link.
   const whatsappUrl = social.whatsapp
     ? `https://wa.me/${social.whatsapp.replace(/[^0-9]/g, "")}`
     : null;
@@ -76,7 +80,7 @@ export default function StorefrontFooter() {
   ];
 
   return (
-    <footer className="mt-16 bg-neutral-950 text-white">
+    <footer className={`mt-16 ${surface} text-white`}>
       {/* Brand + link columns + payment */}
       <div className="container grid grid-cols-2 gap-8 py-14 md:grid-cols-6">
         {/* Brand block */}

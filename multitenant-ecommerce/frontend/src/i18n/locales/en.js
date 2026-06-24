@@ -119,6 +119,7 @@ export default {
     myStore: "My Store",
     banner: "Banner",
     storeSettings: "My Store",
+    subscribers: "Subscribers",
   },
   dashboard: {
     title: "Dashboard",
@@ -876,6 +877,7 @@ export default {
   storefront: { exploreAll: "Explore all" },
   catgrid: {
     explore: "Explore",
+    viewAll: "View all categories",
   },
   trust: {
     shippingTitle: "Fast shipping",
@@ -933,6 +935,22 @@ export default {
       "Tell your store's story, what you sell, what makes you unique...",
     aboutHint: 'This is shown on your store\'s "About us" page.',
     saved: "Changes saved",
+    bannerTitle: "Feature banner (Growth)",
+    bannerHint:
+      "The large banner on your home page. Leave a field empty to use the default text.",
+    bannerLocked:
+      "The feature banner is available on the Growth plan. Upgrade to customize it.",
+    bannerEyebrow: "Small text (top)",
+    bannerEyebrowPlaceholder: "Cutting-edge tech",
+    bannerHeading: "Title",
+    bannerHeadingPlaceholder: "Design. Technology. Quality.",
+    bannerSubtitle: "Description",
+    bannerSubtitlePlaceholder: "Discover our selection of premium products.",
+    bannerCta: "Button text",
+    bannerCtaPlaceholder: "Shop now",
+    bannerImage: "Banner image",
+    bannerImageHint:
+      "Recommended: a horizontal image (JPG, PNG or WEBP). If none, a gradient background is shown.",
   },
   wishlist: {
     eyebrow: "Your selection",
@@ -945,5 +963,17 @@ export default {
     loginTitle: "Sign in to see your wishlist",
     loginSub: "Save the products you like to your account.",
     loginBtn: "Sign in",
+  },
+  subscribers: {
+    title: "Subscribers",
+    subtitle: "Emails subscribed to your newsletter",
+    export: "Export CSV",
+    email: "Email",
+    date: "Date",
+    empty: "No subscribers yet",
+    emptySub: "When someone subscribes from your store, they'll show up here.",
+    loadError: "Could not load subscribers",
+    lockedTitle: "Growth plan feature",
+    lockedSub: "Upgrade your plan to capture and manage subscribers.",
   },
 };

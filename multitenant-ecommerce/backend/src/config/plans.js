@@ -33,7 +33,7 @@ const PLANS = {
     },
     features: {
       // Storefront
-      themes: ["minimal"], // single fixed theme
+      themes: ["starter-dark"],
       customColors: false,
       customDomain: false,
       // Operations
@@ -73,7 +73,7 @@ const PLANS = {
       coupons: 100,
     },
     features: {
-      themes: ["minimal", "natural", "lavender"], // all three themes
+      themes: ["premium-light", "premium-dark"],
       customColors: true,
       customDomain: false,
       orders: true,
@@ -107,7 +107,7 @@ const PLANS = {
       coupons: -1,
     },
     features: {
-      themes: ["minimal", "natural", "lavender"],
+      themes: ["premium-light", "premium-dark"],
       customColors: true,
       customDomain: true, // white-label
       orders: true,

@@ -62,6 +62,7 @@ import UsersPage from "./features/admin/pages/UsersPage";
 import ReturnsPage from "./features/admin/pages/ReturnsPage";
 import StoreSettingsPage from "./features/admin/pages/StoreSettingsPage";
 import PremiumFeaturePage from "./features/admin/pages/PremiumFeaturePage";
+import SubscribersPage from "./features/admin/pages/SubscribersPage";
 
 /**
  * Root app with TWO route groups:
@@ -197,6 +198,7 @@ export default function App() {
                     <Route path="coupons" element={<CouponsPage />} />
                     <Route path="inventory" element={<InventoryPage />} />
                     <Route path="customers" element={<CustomersPage />} />
+                    <Route path="subscribers" element={<SubscribersPage />} />
                     <Route path="reviews" element={<ReviewsPage />} />
                     <Route path="payments" element={<PaymentsPage />} />
                     <Route path="shipping" element={<ShippingPage />} />
@@ -204,6 +206,7 @@ export default function App() {
                     <Route path="users" element={<UsersPage />} />
                     <Route path="returns" element={<ReturnsPage />} />
                     <Route path="appearance" element={<AppearancePage />} />
+
                     <Route
                       path="store-settings"
                       element={<StoreSettingsPage />}

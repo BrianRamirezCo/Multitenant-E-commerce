@@ -10,7 +10,7 @@
  */
 const PLAN_FEATURES = {
   starter: {
-    themes: ['minimal'],
+    themes: ["starter-dark"],
     customColors: false,
     customDomain: false,
     newsletter: false,
@@ -18,11 +18,12 @@ const PLAN_FEATURES = {
     promotions: false,
     advancedAnalytics: false,
     salesByChannel: false,
+    premiumSections: false,
     ai: false,
     prioritySupport: false,
   },
   growth: {
-    themes: ['minimal', 'natural', 'lavender'],
+    themes: ["premium-light", "premium-dark"],
     customColors: true,
     customDomain: false,
     newsletter: true,
@@ -30,11 +31,12 @@ const PLAN_FEATURES = {
     promotions: true,
     advancedAnalytics: true,
     salesByChannel: true,
+    premiumSections: true,
     ai: false,
     prioritySupport: false,
   },
   premium: {
-    themes: ['minimal', 'natural', 'lavender'],
+    themes: ["premium-light", "premium-dark"],
     customColors: true,
     customDomain: true,
     newsletter: true,

@@ -22,6 +22,7 @@ const cartRoutes = require("./modules/cart/routes/cart.routes");
 const userRoutes = require("./modules/users/routes/user.routes");
 const returnRoutes = require("./modules/returns/routes/return.routes");
 const uploadRoutes = require("./modules/uploads/routes/upload.routes");
+const subscriberRoutes = require("./modules/subscribers/routes/subscriber.routes");
 /**
  * Central API router.
  *
@@ -48,6 +49,7 @@ tenantApi.use("/orders", orderRoutes);
 tenantApi.use("/customers", customerRoutes);
 tenantApi.use("/analytics", analyticsRoutes);
 tenantApi.use("/categories", categoryRoutes);
+tenantApi.use("/subscribers", subscriberRoutes);
 tenantApi.use("/coupons", couponRoutes);
 tenantApi.use("/inventory", inventoryRoutes);
 tenantApi.use("/reviews", reviewRoutes);

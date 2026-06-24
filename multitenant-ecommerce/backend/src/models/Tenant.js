@@ -82,6 +82,16 @@ const tenantSchema = new mongoose.Schema(
       title: { type: String, default: null },
       body: { type: String, default: null },
     },
+    // Feature banner (the Apple-style wide band on the home). Configurable on
+    // Growth/Premium. The CTA always points to /store/categories. Falls back to
+    // i18n defaults on the storefront when fields are empty.
+    featureBanner: {
+      eyebrow: { type: String, default: null },
+      title: { type: String, default: null },
+      subtitle: { type: String, default: null },
+      ctaText: { type: String, default: null },
+      imageUrl: { type: String, default: null }, // uploaded to Cloudinary
+    },
     // Legal: copied from the PendingSignup when the tenant is provisioned, so we
     // keep a permanent record that the owner accepted the terms at signup.
     legal: {

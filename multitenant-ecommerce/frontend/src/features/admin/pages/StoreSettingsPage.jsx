@@ -1,6 +1,14 @@
 import { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
-import { Instagram, Phone, Info, Check } from "lucide-react";
+import {
+  Instagram,
+  Phone,
+  Info,
+  Check,
+  Image as ImageIcon,
+  Lock,
+} from "lucide-react";
 import {
   Card,
   CardContent,
@@ -10,18 +18,24 @@ import {
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
 import { Label } from "../../../components/ui/label";
+import ImageUpload from "../../../components/ImageUpload";
+import { hasFeatureClient } from "../../../lib/planClient";
 import {
   useGetStoreSettingsQuery,
   useUpdateStoreSettingsMutation,
 } from "../../tenant/tenantSlice";
 
 /**
- * Admin page: store owner configures their social links (Instagram + WhatsApp)
- * and the "About us" content shown on the storefront. Connected to the real
- * backend (/tenant/store-settings).
+ * Admin page: store owner configures social links (Instagram + WhatsApp), the
+ * "About us" content, and the home Feature Banner (Growth/Premium only).
+ * Connected to the real backend (/tenant/store-settings).
  */
 export default function StoreSettingsPage() {
   const { t } = useTranslation();
+  const tenant = useSelector((s) => s.tenant.info);
+  const plan = tenant?.plan || "starter";
+  const canBanner = hasFeatureClient(plan, "premiumSections");
+
   const { data, isLoading } = useGetStoreSettingsQuery();
   const [save, { isLoading: saving }] = useUpdateStoreSettingsMutation();
 
@@ -29,6 +43,12 @@ export default function StoreSettingsPage() {
   const [whatsapp, setWhatsapp] = useState("");
   const [aboutTitle, setAboutTitle] = useState("");
   const [aboutBody, setAboutBody] = useState("");
+  // Feature banner fields
+  const [fbEyebrow, setFbEyebrow] = useState("");
+  const [fbTitle, setFbTitle] = useState("");
+  const [fbSubtitle, setFbSubtitle] = useState("");
+  const [fbCtaText, setFbCtaText] = useState("");
+  const [fbImageUrl, setFbImageUrl] = useState("");
   const [saved, setSaved] = useState(false);
 
   // Populate when settings load.
@@ -39,6 +59,12 @@ export default function StoreSettingsPage() {
       setWhatsapp(s.social?.whatsapp || "");
       setAboutTitle(s.about?.title || "");
       setAboutBody(s.about?.body || "");
+      const fb = s.featureBanner || {};
+      setFbEyebrow(fb.eyebrow || "");
+      setFbTitle(fb.title || "");
+      setFbSubtitle(fb.subtitle || "");
+      setFbCtaText(fb.ctaText || "");
+      setFbImageUrl(fb.imageUrl || "");
     }
   }, [data]);
 
@@ -48,6 +74,16 @@ export default function StoreSettingsPage() {
       await save({
         social: { instagram, whatsapp },
         about: { title: aboutTitle, body: aboutBody },
+        // Only send banner fields if the plan allows it.
+        ...(canBanner && {
+          featureBanner: {
+            eyebrow: fbEyebrow,
+            title: fbTitle,
+            subtitle: fbSubtitle,
+            ctaText: fbCtaText,
+            imageUrl: fbImageUrl,
+          },
+        }),
       }).unwrap();
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
@@ -149,6 +185,89 @@ export default function StoreSettingsPage() {
               {t("storeSettings.aboutHint")}
             </p>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Feature banner (Growth/Premium) */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <ImageIcon className="h-4 w-4" /> {t("storeSettings.bannerTitle")}
+            {!canBanner && (
+              <Lock className="h-3.5 w-3.5 text-muted-foreground" />
+            )}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {!canBanner ? (
+            <div className="flex items-center gap-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+              <Lock className="h-3.5 w-3.5 shrink-0" />
+              {t("storeSettings.bannerLocked")}
+            </div>
+          ) : (
+            <>
+              <p className="text-xs text-muted-foreground">
+                {t("storeSettings.bannerHint")}
+              </p>
+              <div className="space-y-2">
+                <Label htmlFor="fbEyebrow">
+                  {t("storeSettings.bannerEyebrow")}
+                </Label>
+                <Input
+                  id="fbEyebrow"
+                  value={fbEyebrow}
+                  onChange={(e) => setFbEyebrow(e.target.value)}
+                  placeholder={t("storeSettings.bannerEyebrowPlaceholder")}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="fbTitle">
+                  {t("storeSettings.bannerHeading")}
+                </Label>
+                <Input
+                  id="fbTitle"
+                  value={fbTitle}
+                  onChange={(e) => setFbTitle(e.target.value)}
+                  placeholder={t("storeSettings.bannerHeadingPlaceholder")}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="fbSubtitle">
+                  {t("storeSettings.bannerSubtitle")}
+                </Label>
+                <textarea
+                  id="fbSubtitle"
+                  value={fbSubtitle}
+                  onChange={(e) => setFbSubtitle(e.target.value)}
+                  rows={3}
+                  className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  placeholder={t("storeSettings.bannerSubtitlePlaceholder")}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="fbCtaText">
+                  {t("storeSettings.bannerCta")}
+                </Label>
+                <Input
+                  id="fbCtaText"
+                  value={fbCtaText}
+                  onChange={(e) => setFbCtaText(e.target.value)}
+                  placeholder={t("storeSettings.bannerCtaPlaceholder")}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>{t("storeSettings.bannerImage")}</Label>
+                <ImageUpload
+                  value={fbImageUrl || null}
+                  onChange={(url) => setFbImageUrl(url || "")}
+                  kind="banner"
+                />
+                <p className="text-xs text-muted-foreground">
+                  {t("storeSettings.bannerImageHint")}
+                </p>
+              </div>
+            </>
+          )}
         </CardContent>
       </Card>
 

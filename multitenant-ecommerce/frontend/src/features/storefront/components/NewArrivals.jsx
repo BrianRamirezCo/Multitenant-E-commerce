@@ -87,12 +87,12 @@ function NewArrivalCard({ product }) {
   return (
     <Link to={`/store/product/${product.slug}`} className="group block">
       <div className="overflow-hidden rounded-2xl bg-white ring-1 ring-neutral-200 transition-all duration-300 hover:-translate-y-1 hover:ring-neutral-300">
-        <div className="aspect-square overflow-hidden bg-white">
+        <div className="aspect-square overflow-hidden bg-white p-4">
           {product.images?.[0] ? (
             <img
               src={product.images[0]}
               alt={product.name}
-              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
               loading="lazy"
             />
           ) : (

@@ -12,20 +12,23 @@ import {
   ChevronDown,
   ArrowRight,
 } from "lucide-react";
-import { Button } from "../../../components/ui/button";
-import { Input } from "../../../components/ui/input";
 import { useGetCategoriesQuery } from "../../categories/categoriesApi";
 
 /**
- * Premium storefront header — always dark (NOVA style), regardless of theme.
- * Sticky, centered nav. "Categories" opens a hover dropdown with up to 8
- * categories + a "view all" link. Collapsible search. Dark surface with light
- * text hardcoded so it stays dark on a white-base storefront.
+ * Premium storefront header. Always a dark surface, but the shade depends on the
+ * plan: Starter gets a sober dark-grey header, Growth/Premium get near-black
+ * (the NOVA look). Sticky, centered nav, hover categories dropdown, collapsible
+ * search. Light text hardcoded so it stays readable on the dark surface.
  */
 export default function StorefrontHeader() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const tenant = useSelector((s) => s.tenant.info);
+  const plan = tenant?.plan || "starter";
+  // Starter -> dark grey; Growth/Premium -> near-black (NOVA).
+  const isStarter = plan === "starter";
+  const surface = isStarter ? "bg-neutral-800/95" : "bg-neutral-950/95";
+
   const cartCount = useSelector((s) =>
     s.cart.items.reduce((sum, i) => sum + i.quantity, 0),
   );
@@ -63,7 +66,7 @@ export default function StorefrontHeader() {
 
   return (
     <header
-      className={`sticky top-0 z-40 w-full border-b border-white/10 bg-neutral-950/95 text-white backdrop-blur-md transition-shadow duration-300 ${
+      className={`sticky top-0 z-40 w-full border-b border-white/10 ${surface} text-white backdrop-blur-md transition-shadow duration-300 ${
         scrolled ? "shadow-[0_2px_20px_rgba(0,0,0,0.5)]" : ""
       }`}
     >
@@ -111,7 +114,9 @@ export default function StorefrontHeader() {
 
             {catOpen && categories.length > 0 && (
               <div className="absolute left-1/2 top-full w-64 -translate-x-1/2 pt-3">
-                <div className="overflow-hidden rounded-2xl border border-white/10 bg-neutral-900 p-2 shadow-2xl">
+                <div
+                  className={`overflow-hidden rounded-2xl border border-white/10 ${isStarter ? "bg-neutral-700" : "bg-neutral-900"} p-2 shadow-2xl`}
+                >
                   {categories.map((cat) => {
                     const slug = cat.slug || cat._id;
                     return (
@@ -240,7 +245,9 @@ export default function StorefrontHeader() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="border-t border-white/10 bg-neutral-950 md:hidden">
+        <div
+          className={`border-t border-white/10 ${isStarter ? "bg-neutral-800" : "bg-neutral-950"} md:hidden`}
+        >
           <nav className="container flex flex-col py-3">
             <Link
               to="/store"

@@ -48,8 +48,18 @@ exports.suspendTenant = catchAsync(async (req, res, next) => {
 // GET /tenant/me  -> public info about the CURRENT tenant (for the storefront)
 exports.getCurrentTenant = catchAsync(async (req, res) => {
   // req.tenant is set by the resolver. Expose only public fields.
-  const { _id, slug, name, theme, plan, shipping, banner, social, about } =
-    req.tenant;
+  const {
+    _id,
+    slug,
+    name,
+    theme,
+    plan,
+    shipping,
+    banner,
+    social,
+    about,
+    featureBanner,
+  } = req.tenant;
   res.json({
     status: "success",
     tenant: {
@@ -65,6 +75,8 @@ exports.getCurrentTenant = catchAsync(async (req, res) => {
       // Social links + about content for the footer / about page.
       social: social || { instagram: null, whatsapp: null },
       about: about || { title: null, body: null },
+      // Feature banner config the storefront renders (Growth+).
+      featureBanner: featureBanner || {},
     },
   });
 });
@@ -167,6 +179,7 @@ exports.updatePaymentSettings = catchAsync(async (req, res) => {
     },
   });
 });
+
 // GET /tenant/shipping-settings  -> store owner reads their shipping config.
 exports.getShippingSettings = catchAsync(async (req, res) => {
   const s = req.tenant.shipping || {
@@ -260,6 +273,7 @@ exports.updateBannerSettings = catchAsync(async (req, res) => {
     },
   });
 });
+
 // GET /tenant/store-settings  -> store owner reads social links + about content.
 exports.getStoreSettings = catchAsync(async (req, res) => {
   const t = req.tenant;
@@ -268,6 +282,7 @@ exports.getStoreSettings = catchAsync(async (req, res) => {
     settings: {
       social: t.social || { instagram: null, whatsapp: null },
       about: t.about || { title: null, body: null },
+      featureBanner: t.featureBanner || {},
     },
   });
 });
@@ -275,10 +290,11 @@ exports.getStoreSettings = catchAsync(async (req, res) => {
 // PATCH /tenant/store-settings  -> store owner saves social links + about content.
 exports.updateStoreSettings = catchAsync(async (req, res) => {
   const tenant = req.tenant;
-  const { social, about } = req.body;
+  const { social, about, featureBanner } = req.body;
 
   tenant.social = tenant.social || {};
   tenant.about = tenant.about || {};
+  tenant.featureBanner = tenant.featureBanner || {};
 
   if (social) {
     if (social.instagram !== undefined) {
@@ -291,11 +307,26 @@ exports.updateStoreSettings = catchAsync(async (req, res) => {
         : null;
     }
   }
+
   if (about) {
     if (about.title !== undefined)
       tenant.about.title = about.title?.trim() || null;
     if (about.body !== undefined)
       tenant.about.body = about.body?.trim() || null;
+  }
+
+  if (featureBanner) {
+    const fb = featureBanner;
+    if (fb.eyebrow !== undefined)
+      tenant.featureBanner.eyebrow = fb.eyebrow?.trim() || null;
+    if (fb.title !== undefined)
+      tenant.featureBanner.title = fb.title?.trim() || null;
+    if (fb.subtitle !== undefined)
+      tenant.featureBanner.subtitle = fb.subtitle?.trim() || null;
+    if (fb.ctaText !== undefined)
+      tenant.featureBanner.ctaText = fb.ctaText?.trim() || null;
+    if (fb.imageUrl !== undefined)
+      tenant.featureBanner.imageUrl = fb.imageUrl || null;
   }
 
   await tenant.save();
@@ -304,6 +335,7 @@ exports.updateStoreSettings = catchAsync(async (req, res) => {
     settings: {
       social: tenant.social,
       about: tenant.about,
+      featureBanner: tenant.featureBanner,
     },
   });
 });

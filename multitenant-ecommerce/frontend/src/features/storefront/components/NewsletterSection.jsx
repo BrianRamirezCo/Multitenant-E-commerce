@@ -1,25 +1,32 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Check } from "lucide-react";
+import { Check, Loader2 } from "lucide-react";
+import { useSubscribeMutation } from "../../subscribers/subscribersApi";
 
 /**
  * Newsletter section (minimal, premium). Horizontal layout inside a soft grey
- * card (no border). Title + subtitle on the left, email field + button on the
- * right. Captures an email with validation and shows a thank-you state. NOT
- * wired to the backend yet — the full newsletter feature is premium, built later.
+ * card. Title + subtitle on the left, email field + button on the right.
+ * Captures an email with validation, POSTs it to the backend, and shows a
+ * thank-you state. Subscribers are stored per-tenant and visible in the admin.
  */
 export default function NewsletterSection() {
   const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [done, setDone] = useState(false);
+  const [subscribe, { isLoading }] = useSubscribeMutation();
 
   const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isValid) return;
-    // Placeholder: not persisted yet (premium feature, wired later).
-    setDone(true);
+    try {
+      await subscribe(email).unwrap();
+      setDone(true);
+    } catch {
+      // Even on error we thank the user (e.g. already subscribed = still fine).
+      setDone(true);
+    }
   };
 
   return (
@@ -56,9 +63,10 @@ export default function NewsletterSection() {
               />
               <button
                 type="submit"
-                disabled={!isValid}
-                className="rounded-full bg-neutral-900 px-7 py-3.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+                disabled={!isValid || isLoading}
+                className="flex items-center justify-center gap-2 rounded-full bg-neutral-900 px-7 py-3.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
               >
+                {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
                 {t("newsletter.button")}
               </button>
             </form>
