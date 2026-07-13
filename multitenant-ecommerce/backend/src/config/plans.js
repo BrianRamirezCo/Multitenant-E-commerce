@@ -98,7 +98,7 @@ const PLANS = {
     id: "premium",
     name: "Premium",
     tagline: "Para marcas fuertes y empresas",
-    price: { monthly: 35000, yearly: 350000 },
+    price: { monthly: 350000, yearly: 3500000 },
     limits: {
       products: -1, // unlimited
       imagesPerProduct: 20,
