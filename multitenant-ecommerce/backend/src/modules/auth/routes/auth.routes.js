@@ -14,10 +14,15 @@ const router = express.Router();
 
 router.post("/register", authLimiter, ctrl.register);
 router.post("/login", authLimiter, ctrl.login);
+router.post("/forgot-password", authLimiter, ctrl.forgotPassword);
+router.post("/reset-password", authLimiter, ctrl.resetPassword);
 router.post("/refresh", authLimiter, ctrl.refresh);
 router.post("/logout", ctrl.logout);
 router.get("/me", protect, ctrl.me);
 router.patch("/profile", protect, ctrl.updateProfile);
+
+router.patch("/profile", protect, ctrl.updateProfile);
+router.patch("/password", authLimiter, protect, ctrl.changePassword);
 
 // Wishlist (customer's saved products)
 router.get("/wishlist", protect, ctrl.getWishlist);

@@ -109,6 +109,13 @@ const SECTIONS = [
   {
     titleKey: "sidebar.settingsGroup",
     items: [
+      { to: "/admin/account", labelKey: "sidebar.myAccount", icon: UserCog },
+      {
+        to: "/admin/appearance",
+        labelKey: "sidebar.appearance",
+        icon: Palette,
+      },
+
       {
         to: "/admin/appearance",
         labelKey: "sidebar.appearance",
@@ -125,11 +132,6 @@ const SECTIONS = [
         labelKey: "sidebar.subscribers",
         icon: Mail,
         feature: "newsletter",
-      },
-      {
-        to: "/admin/store-settings",
-        labelKey: "sidebar.storeSettings",
-        icon: Store,
       },
       { to: "/admin/users", labelKey: "sidebar.users", icon: UserCog },
       { to: "/admin/payments", labelKey: "sidebar.payments", icon: CreditCard },

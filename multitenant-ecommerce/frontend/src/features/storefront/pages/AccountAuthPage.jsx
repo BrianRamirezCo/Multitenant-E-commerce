@@ -102,6 +102,16 @@ export default function AccountAuthPage() {
                 onChange={update("password")}
                 onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
               />
+              {isLogin && (
+                <div className="text-right">
+                  <Link
+                    to="/store/forgot-password"
+                    className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    {t("account.forgotPassword")}
+                  </Link>
+                </div>
+              )}
             </div>
 
             {error && <p className="text-sm text-destructive">{error}</p>}

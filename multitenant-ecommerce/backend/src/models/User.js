@@ -36,6 +36,9 @@ const userSchema = new mongoose.Schema(
     },
     // Customer wishlist: product IDs the customer saved (heart button).
     wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
+    // Password reset: a hashed token + its expiry. Both cleared after use.
+    passwordResetToken: { type: String, default: null },
+    passwordResetExpires: { type: Date, default: null },
   },
   { timestamps: true },
 );

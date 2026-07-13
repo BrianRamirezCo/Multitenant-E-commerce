@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Lock } from "lucide-react";
 import LanguageToggle from "../../../components/LanguageToggle";
+import Logo from "../../../components/Logo";
 import { useLoginMutation } from "../authApi";
 
 /**
@@ -56,11 +57,8 @@ export default function LoginPage() {
       {/* Top bar */}
       <header className="relative border-b border-white/10">
         <div className="container flex h-16 items-center justify-between">
-          <Link to="/" className="font-display text-xl font-bold text-white">
-            Commerce
-            <span className="bg-gradient-to-r from-violet-400 to-blue-400 bg-clip-text text-transparent">
-              OS
-            </span>
+          <Link to="/" className="flex items-center">
+            <Logo className="h-20 w-auto" />
           </Link>
           <LanguageToggle />
         </div>
@@ -126,6 +124,14 @@ export default function LoginPage() {
                     placeholder="••••••••"
                     className="w-full rounded-lg border border-white/10 bg-white/[0.02] px-3 py-2.5 text-sm text-white placeholder-white/30 outline-none transition-colors focus:border-violet-500/50 focus:bg-white/[0.04]"
                   />
+                  <div className="text-right">
+                    <Link
+                      to="/admin/forgot-password"
+                      className="text-xs text-white/50 transition-colors hover:text-white"
+                    >
+                      {t("auth.forgotPassword")}
+                    </Link>
+                  </div>
                 </div>
 
                 {error && <p className="text-sm text-red-400">{error}</p>}

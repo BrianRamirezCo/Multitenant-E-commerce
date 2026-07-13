@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
+import Logo from "../../../components/Logo";
 
 /**
  * Sticky premium navbar (dark, blur on scroll). Links are anchors to sections.
@@ -33,11 +34,8 @@ export default function PremiumNav() {
       }`}
     >
       <div className="container flex h-16 items-center justify-between">
-        <Link to="/" className="font-display text-xl font-bold text-white">
-          Commerce
-          <span className="bg-gradient-to-r from-violet-400 to-blue-400 bg-clip-text text-transparent">
-            OS
-          </span>
+        <Link to="/" className="flex items-center">
+          <Logo className="h-20 w-auto" />
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">

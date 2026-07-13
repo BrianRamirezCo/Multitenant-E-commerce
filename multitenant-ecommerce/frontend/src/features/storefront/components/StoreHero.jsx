@@ -82,7 +82,7 @@ export default function StoreHero() {
               </Link>
             )}
             <Link
-              to="/store#productos"
+              to="/store/products"
               className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/5 px-8 py-3.5 text-sm font-semibold text-white backdrop-blur transition-colors hover:bg-white/15"
             >
               {t("storefront.exploreAll")}

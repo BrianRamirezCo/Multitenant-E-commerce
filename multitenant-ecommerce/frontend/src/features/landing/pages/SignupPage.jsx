@@ -3,6 +3,7 @@ import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Check, X, Loader2, ArrowRight, PartyPopper } from "lucide-react";
 import LanguageToggle from "../../../components/LanguageToggle";
+import Logo from "../../../components/Logo";
 import {
   useLazyCheckSlugQuery,
   useSignupMutation,
@@ -174,11 +175,8 @@ export default function SignupPage() {
       {/* Top bar */}
       <header className="relative border-b border-white/10">
         <div className="container flex h-16 items-center justify-between">
-          <Link to="/" className="font-display text-xl font-bold text-white">
-            Commerce
-            <span className="bg-gradient-to-r from-violet-400 to-blue-400 bg-clip-text text-transparent">
-              OS
-            </span>
+          <Link to="/" className="flex items-center">
+            <Logo className="h-20 w-auto" />
           </Link>
           <LanguageToggle />
         </div>

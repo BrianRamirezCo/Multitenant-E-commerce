@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Instagram, Linkedin, Globe } from "lucide-react";
+import Logo from "../../../components/Logo";
 
 /**
  * Premium dark footer with link columns + legal + social icons.
@@ -35,12 +36,7 @@ export default function PremiumFooter() {
       <div className="container grid grid-cols-2 gap-8 py-14 md:grid-cols-5">
         {/* Brand */}
         <div className="col-span-2">
-          <span className="font-display text-xl font-bold text-white">
-            Commerce
-            <span className="bg-gradient-to-r from-violet-400 to-blue-400 bg-clip-text text-transparent">
-              OS
-            </span>
-          </span>
+          <Logo className="h-20 w-auto" />
           <p className="mt-3 max-w-xs text-sm text-white/40">
             La plataforma para crear y hacer crecer tu tienda online.
           </p>
@@ -87,7 +83,7 @@ export default function PremiumFooter() {
 
       <div className="border-t border-white/10">
         <div className="container py-6 text-center text-xs text-white/30">
-          © {year} CommerceOS. Todos los derechos reservados.
+          © {year} CONST. Todos los derechos reservados.
         </div>
       </div>
     </footer>

@@ -12,6 +12,8 @@ import { useTenantTheme } from "./hooks/useTenantTheme";
 import RequireAuth from "./features/auth/components/RequireAuth";
 import RequireCustomer from "./features/auth/components/RequireCustomer";
 import LoginPage from "./features/auth/pages/LoginPage";
+import ForgotPasswordPage from "./features/auth/pages/ForgotPasswordPage";
+import ResetPasswordPage from "./features/auth/pages/ResetPasswordPage";
 
 // ---- Platform (landing + signup + legal) ----
 import LandingPagePremium from "./features/landing/premium/LandingPagePremium";
@@ -30,6 +32,7 @@ import CategoriesIndexPage from "./features/storefront/pages/CategoriesIndexPage
 import CategoryProductsPage from "./features/storefront/pages/CategoryProductsPage";
 import DealsPage from "./features/storefront/pages/DealsPage";
 import NewArrivalsPage from "./features/storefront/pages/NewArrivalsPage";
+import CatalogPage from "./features/storefront/pages/CatalogPage";
 import SearchPage from "./features/storefront/pages/SearchPage";
 import CartPage from "./features/storefront/pages/CartPage";
 import CheckoutPage from "./features/storefront/pages/CheckoutPage";
@@ -63,6 +66,7 @@ import ReturnsPage from "./features/admin/pages/ReturnsPage";
 import StoreSettingsPage from "./features/admin/pages/StoreSettingsPage";
 import PremiumFeaturePage from "./features/admin/pages/PremiumFeaturePage";
 import SubscribersPage from "./features/admin/pages/SubscribersPage";
+import AccountSettingsPage from "./features/admin/pages/AccountSettingsPage";
 
 /**
  * Root app with TWO route groups:
@@ -141,6 +145,7 @@ export default function App() {
                   />
                   <Route path="deals" element={<DealsPage />} />
                   <Route path="new" element={<NewArrivalsPage />} />
+                  <Route path="products" element={<CatalogPage />} />
                   <Route
                     path="wishlist"
                     element={
@@ -153,6 +158,14 @@ export default function App() {
                   <Route path="cart" element={<CartPage />} />
                   <Route path="checkout" element={<CheckoutPage />} />
                   <Route path="login" element={<AccountAuthPage />} />
+                  <Route
+                    path="forgot-password"
+                    element={<ForgotPasswordPage context="store" />}
+                  />
+                  <Route
+                    path="reset-password"
+                    element={<ResetPasswordPage context="store" />}
+                  />
                   <Route
                     path="account"
                     element={
@@ -175,7 +188,7 @@ export default function App() {
           }
         />
 
-        {/* ---- TENANT routes (admin) ---- */}
+        {/* ---- TENANT routes (admin login + password reset) ---- */}
         <Route
           path="/admin/login"
           element={
@@ -184,6 +197,24 @@ export default function App() {
             </TenantBootstrap>
           }
         />
+        <Route
+          path="/admin/forgot-password"
+          element={
+            <TenantBootstrap>
+              <ForgotPasswordPage context="admin" />
+            </TenantBootstrap>
+          }
+        />
+        <Route
+          path="/admin/reset-password"
+          element={
+            <TenantBootstrap>
+              <ResetPasswordPage context="admin" />
+            </TenantBootstrap>
+          }
+        />
+
+        {/* ---- TENANT routes (admin panel) ---- */}
         <Route
           path="/admin/*"
           element={
@@ -206,7 +237,7 @@ export default function App() {
                     <Route path="users" element={<UsersPage />} />
                     <Route path="returns" element={<ReturnsPage />} />
                     <Route path="appearance" element={<AppearancePage />} />
-
+                    <Route path="account" element={<AccountSettingsPage />} />
                     <Route
                       path="store-settings"
                       element={<StoreSettingsPage />}

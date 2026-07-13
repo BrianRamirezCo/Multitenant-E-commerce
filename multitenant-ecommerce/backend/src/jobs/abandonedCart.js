@@ -75,7 +75,11 @@ async function processAbandonedCarts() {
 
       const storeUrl = process.env.PLATFORM_URL || "";
 
-      await sendAbandonedCartEmail(cart, tenant.name, `${storeUrl}/store/cart`);
+      await sendAbandonedCartEmail(
+        cart,
+        { name: tenant.name, logoUrl: tenant.theme?.logoUrl || null },
+        `${storeUrl}/store/cart`,
+      );
 
       // Flip to reminded so we never email this cart again.
       cart.status = "reminded";

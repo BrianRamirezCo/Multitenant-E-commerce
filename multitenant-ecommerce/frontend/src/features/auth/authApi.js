@@ -73,6 +73,30 @@ export const authApi = api.injectEndpoints({
       },
     }),
 
+    // ---- Password reset ----
+    // Change the logged-in user's password. Body: { currentPassword, newPassword }.
+    // No Redux update needed — the session/token stays valid.
+    changePassword: builder.mutation({
+      query: (body) => ({ url: "/auth/password", method: "PATCH", body }),
+    }),
+    // Request a password reset link (sends an email). Body: { email, context }.
+    forgotPassword: builder.mutation({
+      query: (body) => ({
+        url: "/auth/forgot-password",
+        method: "POST",
+        body,
+      }),
+    }),
+    // Set a new password using the token from the email link.
+    // Body: { token, password }.
+    resetPassword: builder.mutation({
+      query: (body) => ({
+        url: "/auth/reset-password",
+        method: "POST",
+        body,
+      }),
+    }),
+
     // ---- Wishlist ----
     // Full product docs of the customer's saved items (for the wishlist page).
     getWishlist: builder.query({
@@ -141,6 +165,9 @@ export const {
   useRefreshMutation,
   useLogoutMutation,
   useUpdateProfileMutation,
+  useChangePasswordMutation,
+  useForgotPasswordMutation,
+  useResetPasswordMutation,
   useGetWishlistQuery,
   useAddToWishlistMutation,
   useRemoveFromWishlistMutation,

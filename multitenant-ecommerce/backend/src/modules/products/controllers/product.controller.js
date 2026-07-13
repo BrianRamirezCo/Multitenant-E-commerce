@@ -23,7 +23,7 @@ exports.countProducts = async () => Product.countDocuments();
 // GET /products  -> list this tenant's active products
 // Supports optional ?category=<slug> and ?search=<text> (a.k.a. ?q=).
 exports.listProducts = catchAsync(async (req, res) => {
-  const { category, page = 1, limit = 20 } = req.query;
+  const { category, page = 1, limit = 20, sort } = req.query;
   const search = (req.query.search || req.query.q || "").trim();
 
   const filter = { isActive: true };
@@ -35,8 +35,17 @@ exports.listProducts = catchAsync(async (req, res) => {
     filter.$or = [{ name: rx }, { description: rx }];
   }
 
+  // Sort options. Default: newest first.
+  const sortMap = {
+    newest: { createdAt: -1 },
+    price_asc: { price: 1 },
+    price_desc: { price: -1 },
+    name_asc: { name: 1 },
+  };
+  const sortBy = sortMap[sort] || sortMap.newest;
+
   const products = await Product.find(filter)
-    .sort({ createdAt: -1 })
+    .sort(sortBy)
     .skip((page - 1) * limit)
     .limit(Number(limit));
 

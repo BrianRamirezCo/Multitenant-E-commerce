@@ -3,7 +3,12 @@ const Order = require("../../../models/Order");
 const Product = require("../../../models/Product");
 const Tenant = require("../../../models/Tenant");
 const Cart = require("../../../models/Cart");
-const { getClient } = require("../services/mercadopago");
+const User = require("../../../models/User");
+const {
+  getClient,
+  resolveAccessToken,
+  tokenMode,
+} = require("../services/mercadopago");
 const {
   sendOrderConfirmationToCustomer,
   sendNewSaleToOwner,
@@ -54,6 +59,15 @@ exports.createPreference = catchAsync(async (req, res, next) => {
       new AppError("This store has no payment method configured.", 400),
     );
   }
+
+  // Log which credentials are in use so sandbox is never confused with prod.
+  logger.info(
+    {
+      tenantSlug: req.tenant.slug,
+      mpTokenMode: tokenMode(resolveAccessToken(req.tenant)),
+    },
+    "MP: creating preference",
+  );
 
   const platformUrl = process.env.PLATFORM_URL || "http://localhost:5173";
   const apiUrl = process.env.API_URL || "http://localhost:5000";
@@ -202,12 +216,52 @@ exports.handleWebhook = catchAsync(async (req, res) => {
     ).catch(() => {});
     logger.info({ orderId }, "stock decremented for paid order");
 
-    // Send emails (best-effort; failures are logged, never block the webhook).
-    // Use the up-to-date order (previous is the pre-update doc, but items/total
-    // don't change on status update, so it's fine to use it for the email).
-    const ownerEmail = process.env.STORE_OWNER_EMAIL || null;
-    await sendOrderConfirmationToCustomer(previous, tenant.name);
-    await sendNewSaleToOwner(previous, ownerEmail, tenant.name);
+    // Resolve the REAL owner of THIS tenant (multitenant-safe). The owner is the
+    // User flagged isOwner within the tenant; there is no owner email on the
+    // Tenant doc. No tenant context here (public webhook), so we pass tenantId
+    // explicitly — the isolation plugin does not auto-filter without context.
+    // Fall back to the global env only if we can't find one, so a misconfig
+    // never silently drops the sale notification.
+    let ownerEmail = process.env.STORE_OWNER_EMAIL || null;
+    try {
+      const owner = await User.findOne({
+        tenantId: tenant._id,
+        isOwner: true,
+      })
+        .select("email")
+        .lean();
+      if (owner?.email) {
+        ownerEmail = owner.email;
+      } else {
+        logger.warn(
+          { tenantId: String(tenant._id) },
+          "webhook: tenant owner email not found, using STORE_OWNER_EMAIL fallback",
+        );
+      }
+    } catch (err) {
+      logger.warn(
+        { err: err?.message, tenantId: String(tenant._id) },
+        "webhook: owner lookup failed, using STORE_OWNER_EMAIL fallback",
+      );
+    }
+
+    const storeBrand = {
+      name: tenant.name,
+      logoUrl: tenant.theme?.logoUrl || null,
+    };
+
+    // Send emails. The order is ALREADY paid at this point, so email problems
+    // must never bubble up and turn into a non-200 (which would make MP retry
+    // the whole webhook). Best-effort: log and continue.
+    try {
+      await sendOrderConfirmationToCustomer(previous, storeBrand);
+      await sendNewSaleToOwner(previous, ownerEmail, tenant.name);
+    } catch (err) {
+      logger.error(
+        { err: err?.message, orderId },
+        "webhook: transactional emails failed (order already paid)",
+      );
+    }
 
     // Mark this shopper's cart as recovered so the abandoned-cart cron won't
     // email them. Match by customer (if any) or by the order's contact email.

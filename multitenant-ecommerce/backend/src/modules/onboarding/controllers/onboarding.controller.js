@@ -8,6 +8,7 @@ const { getPlan, PLAN_ORDER, PLANS } = require("../../../config/plans");
 const catchAsync = require("../../../utils/catchAsync");
 const AppError = require("../../../utils/AppError");
 const logger = require("../../../config/logger");
+const { sendOwnerWelcomeEmail } = require("../../../services/email");
 
 /**
  * ============================================================================
@@ -307,6 +308,20 @@ exports.webhook = catchAsync(async (req, res) => {
     pending.status = "completed";
     await pending.save();
     logger.info({ slug: pending.slug }, "paid tenant provisioned from webhook");
+
+    // Bienvenida al dueño (marca CONST, CTA al panel). Fire-and-forget: si el
+    // mail falla NO marca el signup como fallido; el error queda logueado.
+    const base = process.env.PLATFORM_URL || "http://localhost:5173";
+    sendOwnerWelcomeEmail(
+      pending.ownerEmail,
+      pending.ownerName,
+      `${base}/admin`,
+    ).catch((err) =>
+      logger.error(
+        { err: err?.message, slug: pending.slug, email: pending.ownerEmail },
+        "welcome email to owner failed",
+      ),
+    );
   } catch (err) {
     pending.status = "failed";
     await pending.save().catch(() => {});

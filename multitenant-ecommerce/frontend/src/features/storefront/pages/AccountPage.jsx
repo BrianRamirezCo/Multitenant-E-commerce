@@ -9,6 +9,8 @@ import {
   MapPin,
   RotateCcw,
   ShoppingBag,
+  Lock,
+  CreditCard,
 } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 import { Badge } from "../../../components/ui/badge";
@@ -18,17 +20,19 @@ import { useGetOrdersQuery } from "../../orders/ordersApi";
 import {
   useLogoutMutation,
   useUpdateProfileMutation,
+  useChangePasswordMutation,
 } from "../../auth/authApi";
 import {
   useGetMyReturnsQuery,
   useCreateReturnMutation,
 } from "../../returns/returnsApi";
+import { useCreatePreferenceMutation } from "../../payments/paymentsApi";
 import { formatPrice } from "../../../lib/format";
 
 /**
  * Customer account page (premium style). Shows the customer's profile (editable
- * phone), an editable saved address, and order history. Paid orders can request
- * a return. Logic is UNCHANGED — only the visual layer is upgraded.
+ * phone), an editable saved address, a password change form, and order history.
+ * Pending orders can retry payment; paid orders can request a return.
  */
 const STATUS_VARIANT = {
   pending: "warning",
@@ -46,7 +50,11 @@ export default function AccountPage() {
   const { data: returnsData } = useGetMyReturnsQuery();
   const [logout] = useLogoutMutation();
   const [updateProfile, { isLoading: saving }] = useUpdateProfileMutation();
+  const [changePassword, { isLoading: changingPass }] =
+    useChangePasswordMutation();
   const [createReturn, { isLoading: requesting }] = useCreateReturnMutation();
+  const [createPreference, { isLoading: payLoading }] =
+    useCreatePreferenceMutation();
 
   const orders = data?.orders || [];
   const myReturns = returnsData?.returns || [];
@@ -65,6 +73,10 @@ export default function AccountPage() {
   const [phone, setPhone] = useState("");
   const [addr, setAddr] = useState({ line1: "", city: "", state: "", zip: "" });
   const [msg, setMsg] = useState(null);
+  const [pass, setPass] = useState({ current: "", next: "", confirm: "" });
+  const [passMsg, setPassMsg] = useState(null);
+  const [payingId, setPayingId] = useState(null);
+  const [payError, setPayError] = useState(null);
 
   useEffect(() => {
     if (!user) return;
@@ -97,6 +109,53 @@ export default function AccountPage() {
       setMsg({ type: "ok", text: t("account.addressSaved") });
     } catch {
       setMsg({ type: "err", text: t("account.addressError") });
+    }
+  };
+
+  const changePass = async () => {
+    setPassMsg(null);
+    if (pass.next.length < 8) {
+      setPassMsg({ type: "err", text: t("account.passwordTooShort") });
+      return;
+    }
+    if (pass.next !== pass.confirm) {
+      setPassMsg({ type: "err", text: t("account.passwordMismatch") });
+      return;
+    }
+    try {
+      await changePassword({
+        currentPassword: pass.current,
+        newPassword: pass.next,
+      }).unwrap();
+      setPassMsg({ type: "ok", text: t("account.passwordChanged") });
+      setPass({ current: "", next: "", confirm: "" });
+    } catch (err) {
+      const text =
+        err?.status === 401
+          ? t("account.passwordWrongCurrent")
+          : err?.data?.message || t("account.passwordError");
+      setPassMsg({ type: "err", text });
+    }
+  };
+
+  // Retry payment for a PENDING order: rebuilds the MercadoPago preference for
+  // that same order and redirects to checkout. The backend rejects this if the
+  // order is already paid, so it's safe to call.
+  const payOrder = async (orderId) => {
+    setPayError(null);
+    setPayingId(orderId);
+    try {
+      const pref = await createPreference(orderId).unwrap();
+      const url = pref.initPoint || pref.sandboxInitPoint;
+      if (url) {
+        window.location.href = url;
+        return;
+      }
+      setPayError(t("account.payNoUrl"));
+    } catch (err) {
+      setPayError(err?.data?.message || t("account.payError"));
+    } finally {
+      setPayingId(null);
     }
   };
 
@@ -178,7 +237,7 @@ export default function AccountPage() {
 
       <div className="container py-10">
         <div className="grid gap-8 lg:grid-cols-3">
-          {/* Left column: profile + address */}
+          {/* Left column: profile + address + password */}
           <div className="space-y-6 lg:col-span-1">
             {/* Profile */}
             <div className="rounded-2xl border border-border p-6">
@@ -269,6 +328,78 @@ export default function AccountPage() {
                 )}
               </div>
             </div>
+
+            {/* Change password */}
+            <div className="rounded-2xl border border-border p-6">
+              <h2 className="mb-1 flex items-center gap-2 font-semibold">
+                <Lock className="h-4 w-4" /> {t("account.securityTitle")}
+              </h2>
+              <p className="mb-4 text-xs text-muted-foreground">
+                {t("account.securitySubtitle")}
+              </p>
+
+              <div className="space-y-3">
+                <div className="space-y-1.5">
+                  <Label htmlFor="currentPassword">
+                    {t("account.currentPassword")}
+                  </Label>
+                  <Input
+                    id="currentPassword"
+                    type="password"
+                    value={pass.current}
+                    onChange={(e) =>
+                      setPass((p) => ({ ...p, current: e.target.value }))
+                    }
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="newPassword">
+                    {t("account.newPassword")}
+                  </Label>
+                  <Input
+                    id="newPassword"
+                    type="password"
+                    value={pass.next}
+                    onChange={(e) =>
+                      setPass((p) => ({ ...p, next: e.target.value }))
+                    }
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="confirmPassword">
+                    {t("account.confirmPassword")}
+                  </Label>
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    value={pass.confirm}
+                    onChange={(e) =>
+                      setPass((p) => ({ ...p, confirm: e.target.value }))
+                    }
+                  />
+                </div>
+
+                <Button
+                  className="w-full rounded-full"
+                  size="sm"
+                  onClick={changePass}
+                  disabled={
+                    changingPass || !pass.current || !pass.next || !pass.confirm
+                  }
+                >
+                  {changingPass
+                    ? t("account.savingPassword")
+                    : t("account.changePassword")}
+                </Button>
+                {passMsg && (
+                  <p
+                    className={`text-xs ${passMsg.type === "ok" ? "text-green-600" : "text-destructive"}`}
+                  >
+                    {passMsg.text}
+                  </p>
+                )}
+              </div>
+            </div>
           </div>
 
           {/* Right column: orders */}
@@ -342,6 +473,26 @@ export default function AccountPage() {
                         </div>
                       </div>
 
+                      {/* Pending payment: let the buyer finish paying */}
+                      {o.status === "pending" && (
+                        <div className="mt-3 border-t border-border pt-3">
+                          <Button
+                            size="sm"
+                            className="rounded-full"
+                            onClick={() => payOrder(oid)}
+                            disabled={payLoading && payingId === oid}
+                          >
+                            <CreditCard className="mr-1 h-3.5 w-3.5" />
+                            {payLoading && payingId === oid
+                              ? t("account.paying")
+                              : t("account.payNow")}
+                          </Button>
+                          <p className="mt-2 text-xs text-muted-foreground">
+                            {t("account.payPendingHint")}
+                          </p>
+                        </div>
+                      )}
+
                       {/* Return status (if one exists) */}
                       {existingReturn && (
                         <div className="mt-3 flex items-center gap-2 border-t border-border pt-3">
@@ -409,6 +560,9 @@ export default function AccountPage() {
                     </div>
                   );
                 })}
+                {payError && (
+                  <p className="text-sm text-destructive">{payError}</p>
+                )}
                 {returnMsg && (
                   <p
                     className={`text-sm ${returnMsg.type === "ok" ? "text-green-600" : "text-destructive"}`}
