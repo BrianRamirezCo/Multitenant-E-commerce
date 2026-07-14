@@ -813,6 +813,9 @@ export default {
     imageMobileLabel: "Imagen para celular (opcional)",
     imageMobileHint:
       "Recomendado: formato vertical o cuadrado (ej. 1080x1350). Si no cargás ninguna, se usa la de escritorio recortada.",
+    previewDesktop: "Escritorio",
+    previewMobile: "Celular",
+    previewMobileFallback: "Usando la imagen de escritorio recortada.",
   },
   storeCategories: {
     title: "Categorías",

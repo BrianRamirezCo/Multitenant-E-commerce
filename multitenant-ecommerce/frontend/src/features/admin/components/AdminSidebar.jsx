@@ -116,11 +116,6 @@ const SECTIONS = [
         icon: Palette,
       },
 
-      {
-        to: "/admin/appearance",
-        labelKey: "sidebar.appearance",
-        icon: Palette,
-      },
       { to: "/admin/banner", labelKey: "sidebar.banner", icon: ImageIcon },
       {
         to: "/admin/store-settings",

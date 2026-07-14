@@ -14,6 +14,11 @@ import {
 /**
  * Admin → Banner. Lets the store owner upload a banner image and edit the
  * banner texts (title, subtitle, CTA). A live preview shows how it looks.
+ *
+ * Two images: a landscape one for desktop and an OPTIONAL portrait crop for
+ * phones. A wide hero always gets badly cropped on a vertical viewport, so the
+ * mobile one avoids losing the product. If it's not set, the desktop image is
+ * used on every screen (previous behaviour).
  */
 export default function BannerPage() {
   const { t } = useTranslation();
@@ -23,6 +28,7 @@ export default function BannerPage() {
 
   const [enabled, setEnabled] = useState(true);
   const [imageUrl, setImageUrl] = useState(null);
+  const [imageUrlMobile, setImageUrlMobile] = useState(null);
   const [title, setTitle] = useState("");
   const [subtitle, setSubtitle] = useState("");
   const [ctaText, setCtaText] = useState("");
@@ -35,6 +41,7 @@ export default function BannerPage() {
     const b = data.banner;
     setEnabled(b.enabled !== false);
     setImageUrl(b.imageUrl || null);
+    setImageUrlMobile(b.imageUrlMobile || null);
     setTitle(b.title || "");
     setSubtitle(b.subtitle || "");
     setCtaText(b.ctaText || "");
@@ -47,6 +54,7 @@ export default function BannerPage() {
       await updateBanner({
         enabled,
         imageUrl,
+        imageUrlMobile,
         title,
         subtitle,
         ctaText,
@@ -91,18 +99,34 @@ export default function BannerPage() {
       </Card>
 
       <div className={enabled ? "" : "pointer-events-none opacity-50"}>
-        {/* Image */}
+        {/* Images: desktop + optional mobile crop */}
         <Card>
-          <CardContent className="space-y-2 p-6">
-            <Label>{t("bannerAdmin.imageLabel")}</Label>
-            <ImageUpload
-              value={imageUrl}
-              onChange={setImageUrl}
-              kind="product"
-            />
-            <p className="text-xs text-muted-foreground">
-              {t("bannerAdmin.imageHint")}
-            </p>
+          <CardContent className="space-y-6 p-6">
+            {/* Desktop */}
+            <div className="space-y-2">
+              <Label>{t("bannerAdmin.imageLabel")}</Label>
+              <ImageUpload
+                value={imageUrl}
+                onChange={setImageUrl}
+                kind="product"
+              />
+              <p className="text-xs text-muted-foreground">
+                {t("bannerAdmin.imageHint")}
+              </p>
+            </div>
+
+            {/* Mobile (optional) */}
+            <div className="space-y-2 border-t border-border pt-6">
+              <Label>{t("bannerAdmin.imageMobileLabel")}</Label>
+              <ImageUpload
+                value={imageUrlMobile}
+                onChange={setImageUrlMobile}
+                kind="product"
+              />
+              <p className="text-xs text-muted-foreground">
+                {t("bannerAdmin.imageMobileHint")}
+              </p>
+            </div>
           </CardContent>
         </Card>
 
@@ -150,53 +174,111 @@ export default function BannerPage() {
           </CardContent>
         </Card>
 
-        {/* Live preview */}
+        {/* Live preview — desktop + mobile side by side */}
         <div className="mt-6">
           <p className="mb-2 text-sm font-medium text-muted-foreground">
             {t("bannerAdmin.previewNote")}
           </p>
-          <div className="overflow-hidden rounded-2xl border border-border/60">
-            {imageUrl ? (
-              <div className="relative aspect-[16/6] w-full">
-                <img
-                  src={imageUrl}
-                  alt=""
-                  className="h-full w-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent" />
-                <div className="absolute inset-0 flex flex-col justify-center gap-2 p-6">
-                  <h3 className="max-w-md font-display text-2xl font-bold text-white">
-                    {title || t("bannerAdmin.bannerTitlePlaceholder")}
-                  </h3>
-                  <p className="max-w-sm text-sm text-white/80">{subtitle}</p>
-                  {ctaText && (
-                    <span className="mt-1 w-fit rounded-full bg-white px-4 py-1.5 text-xs font-medium text-black">
-                      {ctaText}
-                    </span>
+
+          <div className="grid gap-4 md:grid-cols-[1fr_200px]">
+            {/* Desktop preview */}
+            <div>
+              <p className="mb-1.5 text-xs text-muted-foreground">
+                {t("bannerAdmin.previewDesktop")}
+              </p>
+              <div className="overflow-hidden rounded-2xl border border-border/60">
+                {imageUrl ? (
+                  <div className="relative aspect-[16/6] w-full">
+                    <img
+                      src={imageUrl}
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent" />
+                    <div className="absolute inset-0 flex flex-col justify-center gap-2 p-6">
+                      <h3 className="max-w-md font-display text-2xl font-bold text-white">
+                        {title || t("bannerAdmin.bannerTitlePlaceholder")}
+                      </h3>
+                      <p className="max-w-sm text-sm text-white/80">
+                        {subtitle}
+                      </p>
+                      {ctaText && (
+                        <span className="mt-1 w-fit rounded-full bg-white px-4 py-1.5 text-xs font-medium text-black">
+                          {ctaText}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div
+                    className="relative aspect-[16/6] w-full"
+                    style={{
+                      background:
+                        "linear-gradient(120deg, hsl(var(--primary)) 0%, hsl(var(--primary) / 0.6) 55%, hsl(var(--accent)) 120%)",
+                    }}
+                  >
+                    <div className="relative flex h-full flex-col justify-center gap-2 p-6">
+                      <h3 className="max-w-md font-display text-2xl font-bold text-white">
+                        {title || t("bannerAdmin.bannerTitlePlaceholder")}
+                      </h3>
+                      <p className="max-w-sm text-sm text-white/85">
+                        {subtitle}
+                      </p>
+                      {ctaText && (
+                        <span className="mt-1 w-fit rounded-full bg-white px-4 py-1.5 text-xs font-medium text-black">
+                          {ctaText}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Mobile preview (falls back to the desktop image) */}
+            <div>
+              <p className="mb-1.5 text-xs text-muted-foreground">
+                {t("bannerAdmin.previewMobile")}
+              </p>
+              <div className="overflow-hidden rounded-2xl border border-border/60">
+                <div className="relative aspect-[9/14] w-full bg-muted">
+                  {imageUrlMobile || imageUrl ? (
+                    <img
+                      src={imageUrlMobile || imageUrl}
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div
+                      className="h-full w-full"
+                      style={{
+                        background:
+                          "linear-gradient(160deg, hsl(var(--primary)) 0%, hsl(var(--primary) / 0.6) 55%, hsl(var(--accent)) 120%)",
+                      }}
+                    />
                   )}
+                  <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60" />
+                  <div className="absolute inset-0 flex flex-col justify-center gap-1.5 p-4">
+                    <h3 className="font-display text-base font-bold leading-tight text-white">
+                      {title || t("bannerAdmin.bannerTitlePlaceholder")}
+                    </h3>
+                    <p className="line-clamp-2 text-[11px] text-white/80">
+                      {subtitle}
+                    </p>
+                    {ctaText && (
+                      <span className="mt-1 w-fit rounded-full bg-white px-3 py-1 text-[10px] font-medium text-black">
+                        {ctaText}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
-            ) : (
-              <div
-                className="relative aspect-[16/6] w-full"
-                style={{
-                  background:
-                    "linear-gradient(120deg, hsl(var(--primary)) 0%, hsl(var(--primary) / 0.6) 55%, hsl(var(--accent)) 120%)",
-                }}
-              >
-                <div className="relative flex h-full flex-col justify-center gap-2 p-6">
-                  <h3 className="max-w-md font-display text-2xl font-bold text-white">
-                    {title || t("bannerAdmin.bannerTitlePlaceholder")}
-                  </h3>
-                  <p className="max-w-sm text-sm text-white/85">{subtitle}</p>
-                  {ctaText && (
-                    <span className="mt-1 w-fit rounded-full bg-white px-4 py-1.5 text-xs font-medium text-black">
-                      {ctaText}
-                    </span>
-                  )}
-                </div>
-              </div>
-            )}
+              {!imageUrlMobile && imageUrl && (
+                <p className="mt-1.5 text-[11px] text-muted-foreground">
+                  {t("bannerAdmin.previewMobileFallback")}
+                </p>
+              )}
+            </div>
           </div>
         </div>
       </div>

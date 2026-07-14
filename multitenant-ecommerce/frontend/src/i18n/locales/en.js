@@ -805,6 +805,9 @@ export default {
     imageMobileLabel: "Mobile image (optional)",
     imageMobileHint:
       "Recommended: vertical or square format (e.g. 1080x1350). If you don't upload any, the desktop image will be used cropped.",
+    previewDesktop: "Desktop",
+    previewMobile: "Mobile",
+    previewMobileFallback: "Using the desktop image cropped.",
   },
   storeCategories: {
     title: "Categories",
