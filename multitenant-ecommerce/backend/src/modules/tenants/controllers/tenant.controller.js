@@ -59,6 +59,7 @@ exports.getCurrentTenant = catchAsync(async (req, res) => {
     social,
     about,
     featureBanner,
+    pages,
   } = req.tenant;
   res.json({
     status: "success",
@@ -75,6 +76,9 @@ exports.getCurrentTenant = catchAsync(async (req, res) => {
       // Social links + about content for the footer / about page.
       social: social || { instagram: null, whatsapp: null },
       about: about || { title: null, body: null },
+      // Editable info pages (shipping, returns, terms, privacy).
+      pages: pages || {},
+      featureBanner: featureBanner || {},
       // Feature banner config the storefront renders (Growth+).
       featureBanner: featureBanner || {},
     },
@@ -349,6 +353,45 @@ exports.updateStoreSettings = catchAsync(async (req, res) => {
       social: tenant.social,
       about: tenant.about,
       featureBanner: tenant.featureBanner,
+    },
+  });
+});
+// GET /tenant/pages  -> store owner reads their editable info pages.
+exports.getPages = catchAsync(async (req, res) => {
+  const p = req.tenant.pages || {};
+  res.json({
+    status: "success",
+    pages: {
+      shipping: p.shipping || "",
+      returns: p.returns || "",
+      terms: p.terms || "",
+      privacy: p.privacy || "",
+    },
+  });
+});
+
+// PATCH /tenant/pages  -> store owner saves their info pages.
+// An empty string clears the field, so the storefront shows the default text.
+exports.updatePages = catchAsync(async (req, res) => {
+  const tenant = req.tenant;
+  const { shipping, returns, terms, privacy } = req.body;
+
+  tenant.pages = tenant.pages || {};
+  if (shipping !== undefined) tenant.pages.shipping = shipping?.trim() || null;
+  if (returns !== undefined) tenant.pages.returns = returns?.trim() || null;
+  if (terms !== undefined) tenant.pages.terms = terms?.trim() || null;
+  if (privacy !== undefined) tenant.pages.privacy = privacy?.trim() || null;
+
+  await tenant.save();
+
+  const p = tenant.pages;
+  res.json({
+    status: "success",
+    pages: {
+      shipping: p.shipping || "",
+      returns: p.returns || "",
+      terms: p.terms || "",
+      privacy: p.privacy || "",
     },
   });
 });

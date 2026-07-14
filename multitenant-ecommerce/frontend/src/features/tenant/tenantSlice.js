@@ -73,6 +73,22 @@ const tenantApi = api.injectEndpoints({
       }),
       invalidatesTags: ["StoreSettings", "Tenant"],
     }),
+    // Store owner reads the copy of their info pages (shipping, returns,
+    // terms, privacy). Empty fields mean "use the generic default".
+    getPages: builder.query({
+      query: () => "/tenant/pages",
+      providesTags: ["TenantPages"],
+    }),
+    // Store owner saves their info pages. Invalidates Tenant too, since the
+    // storefront reads this content from /tenant/me.
+    updatePages: builder.mutation({
+      query: (body) => ({
+        url: "/tenant/pages",
+        method: "PATCH",
+        body,
+      }),
+      invalidatesTags: ["TenantPages", "Tenant"],
+    }),
   }),
 });
 
@@ -87,6 +103,8 @@ export const {
   useUpdateBannerSettingsMutation,
   useGetStoreSettingsQuery,
   useUpdateStoreSettingsMutation,
+  useGetPagesQuery,
+  useUpdatePagesMutation,
 } = tenantApi;
 
 const tenantSlice = createSlice({

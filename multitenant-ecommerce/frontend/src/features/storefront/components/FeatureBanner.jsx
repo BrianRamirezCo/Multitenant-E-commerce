@@ -33,10 +33,10 @@ export default function FeatureBanner() {
             <p className="text-xs font-semibold uppercase tracking-widest text-white/50">
               {eyebrow}
             </p>
-            <h2 className="mt-3 font-display text-3xl font-bold leading-tight tracking-tight text-white md:text-4xl">
+            <h2 className="mt-3 break-words font-display text-2xl font-bold leading-tight tracking-tight text-white sm:text-3xl md:text-4xl">
               {title}
             </h2>
-            <p className="mt-4 max-w-md text-sm leading-relaxed text-white/70 md:text-base">
+            <p className="mt-4 max-w-md break-words text-sm leading-relaxed text-white/70 md:text-base">
               {subtitle}
             </p>
             <Link

@@ -101,6 +101,12 @@ const tenantSchema = new mongoose.Schema(
       termsVersion: { type: String, default: null },
       ipAddress: { type: String, default: null },
     },
+    pages: {
+      shipping: { type: String, default: null },
+      returns: { type: String, default: null },
+      terms: { type: String, default: null },
+      privacy: { type: String, default: null },
+    },
   },
 
   { timestamps: true },

@@ -45,6 +45,7 @@ export const api = createApi({
     "StoreSettings",
     "Wishlist",
     "Subscriber",
+    "TenantPages",
   ],
   endpoints: () => ({}),
 });

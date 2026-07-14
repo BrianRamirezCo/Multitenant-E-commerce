@@ -76,5 +76,9 @@ publicRouter.patch(
   restrictTo("admin"),
   ctrl.updateStoreSettings,
 );
+// The store owner writes the copy of their storefront info pages
+// (shipping, returns, terms, privacy).
+publicRouter.get("/pages", protect, restrictTo("admin"), ctrl.getPages);
+publicRouter.patch("/pages", protect, restrictTo("admin"), ctrl.updatePages);
 
 module.exports = { adminRouter, publicRouter };

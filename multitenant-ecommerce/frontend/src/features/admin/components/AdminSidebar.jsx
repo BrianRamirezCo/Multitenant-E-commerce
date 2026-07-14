@@ -24,6 +24,7 @@ import {
   LogOut,
   Lock,
   Store,
+  FileText,
   Image as ImageIcon,
 } from "lucide-react";
 import { cn } from "../../../lib/utils";
@@ -131,6 +132,7 @@ const SECTIONS = [
       { to: "/admin/users", labelKey: "sidebar.users", icon: UserCog },
       { to: "/admin/payments", labelKey: "sidebar.payments", icon: CreditCard },
       { to: "/admin/shipping", labelKey: "sidebar.shipping", icon: Truck },
+      { to: "/admin/pages", labelKey: "sidebar.pages", icon: FileText },
     ],
   },
 ];

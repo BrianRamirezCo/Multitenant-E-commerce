@@ -35,6 +35,7 @@ export default {
     freeShipping: "Envío gratis en compras superiores a $50.000",
     about: "Nosotros",
     viewAllCategories: "Ver todas las categorías",
+    wishlist: "Favoritos",
   },
   footer: {
     shop: "Comprar",

@@ -33,3 +33,22 @@ export function StorefrontSection({ heading, children }) {
     </section>
   );
 }
+/**
+ * Renders the tenant's custom copy for an info page when set, otherwise the
+ * generic default passed as children. Plain text: blank lines separate
+ * paragraphs, so store owners don't need to know any markup.
+ */
+export function StorefrontCustomContent({ content, children }) {
+  if (!content || !content.trim()) return children;
+
+  const paragraphs = content.split(/\n{2,}/);
+  return (
+    <>
+      {paragraphs.map((para, i) => (
+        <p key={i} className="whitespace-pre-line">
+          {para}
+        </p>
+      ))}
+    </>
+  );
+}

@@ -10,6 +10,7 @@ import { useTenantTheme } from "./hooks/useTenantTheme";
 
 // ---- Auth guards ----
 import RequireAuth from "./features/auth/components/RequireAuth";
+import ScrollToTop from "./components/ScrollToTop";
 import RequireCustomer from "./features/auth/components/RequireCustomer";
 import LoginPage from "./features/auth/pages/LoginPage";
 import ForgotPasswordPage from "./features/auth/pages/ForgotPasswordPage";
@@ -67,6 +68,7 @@ import StoreSettingsPage from "./features/admin/pages/StoreSettingsPage";
 import PremiumFeaturePage from "./features/admin/pages/PremiumFeaturePage";
 import SubscribersPage from "./features/admin/pages/SubscribersPage";
 import AccountSettingsPage from "./features/admin/pages/AccountSettingsPage";
+import PagesSettingsPage from "./features/admin/pages/PagesSettingsPage";
 
 /**
  * Root app with TWO route groups:
@@ -119,6 +121,7 @@ function TenantBootstrap({ children }) {
 export default function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         {/* ---- PLATFORM routes (no tenant) ---- */}
         <Route path="/" element={<LandingPagePremium />} />
@@ -238,6 +241,7 @@ export default function App() {
                     <Route path="returns" element={<ReturnsPage />} />
                     <Route path="appearance" element={<AppearancePage />} />
                     <Route path="account" element={<AccountSettingsPage />} />
+                    <Route path="pages" element={<PagesSettingsPage />} />
                     <Route
                       path="store-settings"
                       element={<StoreSettingsPage />}

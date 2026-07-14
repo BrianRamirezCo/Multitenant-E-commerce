@@ -34,6 +34,7 @@ export default {
     freeShipping: "Free shipping on orders over $50,000",
     about: "About",
     viewAllCategories: "View all categories",
+    wishlist: "Wishlist",
   },
   footer: {
     shop: "Shop",
@@ -121,6 +122,22 @@ export default {
     storeSettings: "My Store",
     subscribers: "Subscribers",
     myAccount: "My Account",
+  },
+  pagesAdmin: {
+    title: "Informational Pages",
+    subtitle:
+      "Write the policies for your store. If you leave a field empty, a generic text will be displayed.",
+    shipping: "Shipping Information",
+    returns: "Changes and Returns",
+    terms: "Terms and Conditions",
+    privacy: "Privacy Policy",
+    placeholder:
+      "Write the content for this page here. Leave a blank line to separate paragraphs.",
+    emptyHint: "If you leave it empty, a default text will be displayed.",
+    save: "Save Changes",
+    saving: "Saving...",
+    saved: "Pages Updated",
+    saveError: "Could not save the changes",
   },
   dashboard: {
     title: "Dashboard",
