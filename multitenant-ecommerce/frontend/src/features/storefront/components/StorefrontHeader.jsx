@@ -166,8 +166,8 @@ export default function StorefrontHeader() {
 
         {/* Actions (right) */}
         <div className="ml-auto flex items-center gap-1 text-white">
-          {/* Collapsible search */}
-          <div className="relative flex items-center">
+          {/* Collapsible search — desktop only */}
+          <div className="relative hidden items-center md:flex">
             {searchOpen && (
               <form
                 onSubmit={submitSearch}
@@ -202,6 +202,15 @@ export default function StorefrontHeader() {
               </button>
             )}
           </div>
+
+          {/* Mobile search — goes to the search page (no inline expand) */}
+          <Link
+            to="/store/search"
+            aria-label={t("nav.search")}
+            className="flex h-10 w-10 items-center justify-center rounded-md text-white/80 transition-colors hover:bg-white/10 hover:text-white md:hidden"
+          >
+            <Search className="h-5 w-5" />
+          </Link>
 
           <Link
             to="/store/wishlist"

@@ -41,20 +41,40 @@ export default function NewArrivals() {
             </h2>
           </div>
 
-          <Link
-            to="/store/new"
-            className="flex items-center gap-1 text-sm font-medium text-neutral-500 transition-colors hover:text-neutral-900"
-          >
-            {t("newArrivals.viewAll")}
-            <ArrowRight className="h-4 w-4" />
-          </Link>
+          <div className="flex items-center gap-4">
+            {/* Arrows (desktop only — on mobile you just swipe) */}
+            <div className="hidden items-center gap-2 md:flex">
+              <button
+                onClick={() => scrollBy(-1)}
+                aria-label="Anterior"
+                className="flex h-9 w-9 items-center justify-center rounded-full ring-1 ring-neutral-200 text-neutral-500 transition-colors hover:bg-white hover:text-neutral-900"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => scrollBy(1)}
+                aria-label="Siguiente"
+                className="flex h-9 w-9 items-center justify-center rounded-full ring-1 ring-neutral-200 text-neutral-500 transition-colors hover:bg-white hover:text-neutral-900"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
+
+            <Link
+              to="/store/new"
+              className="flex items-center gap-1 text-sm font-medium text-neutral-500 transition-colors hover:text-neutral-900"
+            >
+              {t("newArrivals.viewAll")}
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
         </div>
 
         {/* Carousel */}
         {isLoading ? (
           <div className="flex gap-4 overflow-hidden">
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="w-[260px] shrink-0">
+              <div key={i} className="w-[70%] shrink-0 sm:w-[45%] md:w-[260px]">
                 <div className="aspect-square rounded-2xl bg-neutral-200" />
                 <div className="mt-3 h-4 w-2/3 rounded bg-neutral-200" />
                 <div className="mt-2 h-4 w-1/3 rounded bg-neutral-200" />
@@ -67,7 +87,10 @@ export default function NewArrivals() {
             className="flex snap-x gap-4 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
             {products.map((product) => (
-              <div key={product._id} className="w-[260px] shrink-0 snap-start">
+              <div
+                key={product._id}
+                className="w-[70%] shrink-0 snap-start sm:w-[45%] md:w-[260px]"
+              >
                 <NewArrivalCard product={product} />
               </div>
             ))}

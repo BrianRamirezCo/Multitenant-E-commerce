@@ -85,9 +85,17 @@ export default function StorefrontFooter() {
       <div className="container grid grid-cols-2 gap-8 py-14 md:grid-cols-6">
         {/* Brand block */}
         <div className="col-span-2">
-          <span className="font-display text-xl font-bold tracking-tight text-white">
-            {tenant?.name || t("nav.store")}
-          </span>
+          {tenant?.theme?.logoUrl ? (
+            <img
+              src={tenant.theme.logoUrl}
+              alt={tenant.name}
+              className="h-9 w-auto"
+            />
+          ) : (
+            <span className="font-display text-xl font-bold tracking-tight text-white">
+              {tenant?.name || t("nav.store")}
+            </span>
+          )}
           <p className="mt-3 max-w-xs text-sm leading-relaxed text-white/50">
             {t("footer.tagline")}
           </p>
