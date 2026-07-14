@@ -2,11 +2,17 @@ import { useSelector } from "react-redux";
 import StorefrontPageLayout, {
   StorefrontSection,
   StorefrontCustomContent,
+  StorefrontDefaultNotice,
 } from "../components/StorefrontPageLayout";
 
 /**
- * Shipping info. Shows the store's own copy (admin → Páginas) when set;
- * otherwise a generic default so the page is never empty.
+ * Shipping info.
+ *
+ * When the store hasn't written its own copy (admin → Páginas), we show a
+ * default that only states what is actually true for every store — never an
+ * invented policy (delivery times, coverage areas, free-shipping thresholds all
+ * depend on the specific business). The notice makes it explicit that the store
+ * hasn't published its own conditions yet.
  */
 export default function ShippingInfoPage() {
   const tenant = useSelector((s) => s.tenant.info);
@@ -16,38 +22,29 @@ export default function ShippingInfoPage() {
   return (
     <StorefrontPageLayout title="Información de envíos">
       <StorefrontCustomContent content={custom}>
-        <p>
-          En {store} queremos que recibas tu pedido de la forma más rápida y
-          segura posible.
-        </p>
-
-        <StorefrontSection heading="Zonas de envío">
-          <p>
-            Realizamos envíos a todo el país. Los tiempos y costos pueden variar
-            según tu ubicación, y se calculan automáticamente al finalizar tu
-            compra.
-          </p>
-        </StorefrontSection>
-
-        <StorefrontSection heading="Tiempos de entrega">
-          <p>
-            Una vez confirmado el pago, preparamos tu pedido y lo despachamos en
-            un plazo estimado de 24 a 72 horas hábiles. El tiempo de entrega
-            depende del servicio de correo y tu localidad.
-          </p>
-        </StorefrontSection>
+        <StorefrontDefaultNotice />
 
         <StorefrontSection heading="Costos de envío">
           <p>
-            El costo de envío se muestra antes de confirmar tu compra. En
-            algunos casos puede haber envío gratis a partir de cierto monto.
+            El costo de envío se calcula y se muestra antes de que confirmes tu
+            compra. Nunca vas a pagar un monto distinto al que viste al
+            finalizar el pedido.
           </p>
         </StorefrontSection>
 
-        <StorefrontSection heading="Seguimiento">
+        <StorefrontSection heading="Zonas y plazos de entrega">
           <p>
-            Cuando tu pedido sea despachado, te enviaremos la información de
-            seguimiento al correo que registraste.
+            Las zonas de cobertura y los plazos de entrega de {store} todavía no
+            fueron publicados. Antes de comprar, consultá con la tienda si
+            realizan envíos a tu localidad y cuánto demora la entrega.
+          </p>
+        </StorefrontSection>
+
+        <StorefrontSection heading="Seguimiento de tu pedido">
+          <p>
+            Vas a recibir un correo electrónico con la confirmación de tu
+            compra. La tienda te informará el estado del envío por los medios de
+            contacto que registraste.
           </p>
         </StorefrontSection>
       </StorefrontCustomContent>

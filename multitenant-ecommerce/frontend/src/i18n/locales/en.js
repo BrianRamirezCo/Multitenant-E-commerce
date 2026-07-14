@@ -138,6 +138,10 @@ export default {
     saving: "Saving...",
     saved: "Pages Updated",
     saveError: "Could not save the changes",
+    warningTitle: "Complete your real policies",
+    warningBody:
+      "While a field is empty, your store displays a generic text that clarifies to the buyer that you haven't published your terms yet. It's important that you write your own: delivery timeframes, shipping zones, and return timeframes depend on each business and are your responsibility towards the customer.",
+    usingDefault: "Using generic text",
   },
   dashboard: {
     title: "Dashboard",

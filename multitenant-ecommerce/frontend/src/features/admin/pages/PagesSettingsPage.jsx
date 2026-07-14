@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { FileText } from "lucide-react";
+import { FileText, AlertTriangle } from "lucide-react";
 import { Card, CardContent } from "../../../components/ui/card";
 import { Button } from "../../../components/ui/button";
 import { Label } from "../../../components/ui/label";
@@ -11,8 +11,13 @@ import {
 
 /**
  * Admin → Páginas. Lets the store owner write the copy for the four info pages
- * of their storefront. Leaving a field empty falls back to a generic default,
- * so no page is ever blank.
+ * of their storefront.
+ *
+ * An empty field falls back to a generic default on the storefront — one that
+ * explicitly tells shoppers the store hasn't published its own conditions yet,
+ * and only states what is true by law. That's deliberate: delivery times, return
+ * windows and data-usage policies differ per business, so we never make one up
+ * on the owner's behalf. The warning below pushes them to fill these in.
  */
 const FIELDS = [
   { key: "shipping", labelKey: "pagesAdmin.shipping" },
@@ -57,6 +62,8 @@ export default function PagesSettingsPage() {
     }
   };
 
+  const pendingCount = FIELDS.filter((f) => !form[f.key]?.trim()).length;
+
   return (
     <div className="max-w-3xl space-y-6">
       <div>
@@ -68,24 +75,49 @@ export default function PagesSettingsPage() {
         </p>
       </div>
 
-      {FIELDS.map((f) => (
-        <Card key={f.key}>
-          <CardContent className="space-y-2 p-6">
-            <Label htmlFor={f.key}>{t(f.labelKey)}</Label>
-            <textarea
-              id={f.key}
-              value={form[f.key]}
-              onChange={update(f.key)}
-              rows={8}
-              placeholder={t("pagesAdmin.placeholder")}
-              className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm outline-none transition-colors focus:border-primary"
-            />
-            <p className="text-xs text-muted-foreground">
-              {t("pagesAdmin.emptyHint")}
+      {/* Warning — only while at least one page is still using the default. */}
+      {pendingCount > 0 && (
+        <div className="flex gap-3 rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+          <div>
+            <p className="text-sm font-medium text-foreground">
+              {t("pagesAdmin.warningTitle")}
             </p>
-          </CardContent>
-        </Card>
-      ))}
+            <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+              {t("pagesAdmin.warningBody")}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {FIELDS.map((f) => {
+        const isEmpty = !form[f.key]?.trim();
+        return (
+          <Card key={f.key}>
+            <CardContent className="space-y-2 p-6">
+              <div className="flex items-center justify-between gap-3">
+                <Label htmlFor={f.key}>{t(f.labelKey)}</Label>
+                {isEmpty && (
+                  <span className="shrink-0 rounded-full bg-amber-500/15 px-2 py-0.5 text-[11px] font-medium text-amber-600">
+                    {t("pagesAdmin.usingDefault")}
+                  </span>
+                )}
+              </div>
+              <textarea
+                id={f.key}
+                value={form[f.key]}
+                onChange={update(f.key)}
+                rows={8}
+                placeholder={t("pagesAdmin.placeholder")}
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm outline-none transition-colors focus:border-primary"
+              />
+              <p className="text-xs text-muted-foreground">
+                {t("pagesAdmin.emptyHint")}
+              </p>
+            </CardContent>
+          </Card>
+        );
+      })}
 
       <div className="flex items-center gap-3">
         <Button onClick={save} disabled={saving || isLoading}>

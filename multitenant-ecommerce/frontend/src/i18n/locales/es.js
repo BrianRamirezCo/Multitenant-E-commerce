@@ -125,6 +125,27 @@ export default {
     banner: "Banner principal",
     subscribers: "Suscriptores",
     myAccount: "Mi cuenta",
+    pages: "Páginas",
+  },
+  pagesAdmin: {
+    title: "Páginas informativas",
+    subtitle:
+      "Escribí las políticas de tu tienda. Si dejás un campo vacío, se muestra un texto genérico.",
+    shipping: "Información de envíos",
+    returns: "Cambios y devoluciones",
+    terms: "Términos y condiciones",
+    privacy: "Política de privacidad",
+    placeholder:
+      "Escribí acá el contenido de esta página. Dejá una línea en blanco para separar párrafos.",
+    emptyHint: "Si lo dejás vacío, se muestra un texto por defecto.",
+    save: "Guardar cambios",
+    saving: "Guardando...",
+    saved: "Páginas actualizadas",
+    saveError: "No se pudieron guardar los cambios",
+    warningTitle: "Completá tus políticas reales",
+    warningBody:
+      "Mientras un campo esté vacío, tu tienda muestra un texto general que le aclara al comprador que todavía no publicaste tus condiciones. Es importante que escribas las tuyas: los plazos de entrega, las zonas de envío y los plazos de cambio dependen de cada negocio y son tu responsabilidad frente al comprador.",
+    usingDefault: "Usando texto genérico",
   },
   dashboard: {
     title: "Dashboard",

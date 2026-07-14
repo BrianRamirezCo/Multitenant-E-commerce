@@ -52,3 +52,17 @@ export function StorefrontCustomContent({ content, children }) {
     </>
   );
 }
+/**
+ * Shown inside a default (non-configured) info page. Tells the shopper the store
+ * hasn't published its own policy yet, so we never pass a generic text off as if
+ * it were the store's actual terms.
+ */
+export function StorefrontDefaultNotice() {
+  return (
+    <div className="rounded-lg border border-border bg-secondary/40 p-4 text-xs text-muted-foreground">
+      Esta tienda todavía no publicó sus condiciones propias para esta sección.
+      A continuación se detalla la información general que aplica por normativa
+      vigente. Para consultas específicas, contactate con la tienda.
+    </div>
+  );
+}

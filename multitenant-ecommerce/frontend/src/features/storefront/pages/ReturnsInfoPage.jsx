@@ -1,50 +1,64 @@
 import { useSelector } from "react-redux";
 import StorefrontPageLayout, {
   StorefrontSection,
+  StorefrontCustomContent,
+  StorefrontDefaultNotice,
 } from "../components/StorefrontPageLayout";
 
+/**
+ * Returns & exchanges.
+ *
+ * When the store hasn't written its own policy, we show a default that ONLY
+ * states what is true by law for everyone (the 10-day right of withdrawal in
+ * Argentina, Ley 24.240 art. 34) — never an invented store policy like a
+ * specific exchange window, who pays the return shipping, etc. Those depend on
+ * each store and must be filled in from admin → Páginas.
+ */
 export default function ReturnsInfoPage() {
   const tenant = useSelector((s) => s.tenant.info);
   const store = tenant?.name || "la tienda";
+  const custom = tenant?.pages?.returns;
 
   return (
     <StorefrontPageLayout title="Cambios y devoluciones">
-      <p>
-        En {store} queremos que estés conforme con tu compra. Si algo no salió
-        como esperabas, podés solicitar un cambio o devolución.
-      </p>
+      <StorefrontCustomContent content={custom}>
+        <StorefrontDefaultNotice />
 
-      <StorefrontSection heading="Plazo">
-        <p>
-          Tenés hasta 30 días desde la recepción del pedido para solicitar un
-          cambio o devolución, siempre que el producto se encuentre en su estado
-          y empaque original.
-        </p>
-      </StorefrontSection>
+        <StorefrontSection heading="Derecho de arrepentimiento">
+          <p>
+            Si compraste a distancia (por internet), tenés derecho a
+            arrepentirte de tu compra dentro de los 10 días corridos desde que
+            recibiste el producto, sin necesidad de justificar el motivo y sin
+            costo alguno. Este derecho está garantizado por la Ley 24.240 de
+            Defensa del Consumidor.
+          </p>
+        </StorefrontSection>
 
-      <StorefrontSection heading="Cómo solicitarlo">
-        <p>
-          Para iniciar un cambio o devolución, contactanos a través de los
-          medios disponibles en nuestra página de contacto, indicando tu número
-          de pedido y el motivo.
-        </p>
-      </StorefrontSection>
+        <StorefrontSection heading="Productos con fallas">
+          <p>
+            Si el producto presenta un defecto de fábrica, tenés derecho a su
+            reparación, cambio o a la devolución del importe abonado, conforme a
+            la garantía legal.
+          </p>
+        </StorefrontSection>
 
-      <StorefrontSection heading="Reintegros">
-        <p>
-          Una vez recibido y revisado el producto, procesaremos el reintegro o
-          el cambio correspondiente. Los reintegros se realizan por el mismo
-          medio de pago utilizado en la compra.
-        </p>
-      </StorefrontSection>
+        <StorefrontSection heading="Cómo iniciar el trámite">
+          <p>
+            Ingresá a tu cuenta, buscá el pedido en "Mis pedidos" y solicitá la
+            devolución indicando el motivo. {store} va a revisar tu solicitud y
+            responderte.
+          </p>
+        </StorefrontSection>
 
-      <StorefrontSection heading="Excepciones">
-        <p>
-          Algunos productos pueden no admitir cambio o devolución por motivos de
-          higiene o por ser elaborados a medida. Esto se indicará en la
-          descripción del producto cuando corresponda.
-        </p>
-      </StorefrontSection>
+        <StorefrontSection heading="Condiciones particulares">
+          <p>
+            Las condiciones propias de esta tienda (plazos para cambios por otro
+            producto, estado en que debe estar el artículo, costos de envío de
+            la devolución) todavía no fueron publicadas. Consultalas
+            directamente con la tienda antes de iniciar el trámite.
+          </p>
+        </StorefrontSection>
+      </StorefrontCustomContent>
     </StorefrontPageLayout>
   );
 }
