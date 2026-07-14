@@ -810,6 +810,9 @@ export default {
     saved: "Banner guardado",
     saveError: "No se pudo guardar el banner.",
     previewNote: "Así se verá el banner en tu tienda:",
+    imageMobileLabel: "Imagen para celular (opcional)",
+    imageMobileHint:
+      "Recomendado: formato vertical o cuadrado (ej. 1080x1350). Si no cargás ninguna, se usa la de escritorio recortada.",
   },
   storeCategories: {
     title: "Categorías",

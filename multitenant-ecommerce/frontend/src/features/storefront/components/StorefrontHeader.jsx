@@ -19,6 +19,11 @@ import { useGetCategoriesQuery } from "../../categories/categoriesApi";
  * plan: Starter gets a sober dark-grey header, Growth/Premium get near-black
  * (the NOVA look). Sticky, centered nav, hover categories dropdown, collapsible
  * search. Light text hardcoded so it stays readable on the dark surface.
+ *
+ * Search behaviour differs by breakpoint:
+ *   - desktop: the magnifier expands into an inline input
+ *   - mobile:  the magnifier opens the mobile menu, whose first element is the
+ *              search field (an inline input would overlap the other icons)
  */
 export default function StorefrontHeader() {
   const { t } = useTranslation();
@@ -41,6 +46,7 @@ export default function StorefrontHeader() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [catOpen, setCatOpen] = useState(false);
   const searchInputRef = useRef(null);
+  const mobileSearchRef = useRef(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -62,6 +68,13 @@ export default function StorefrontHeader() {
     navigate(`/store/search?q=${encodeURIComponent(q)}`);
     setMobileOpen(false);
     setSearchOpen(false);
+  };
+
+  // Open the mobile menu and focus its search field.
+  const openMobileSearch = () => {
+    setMobileOpen(true);
+    // The input mounts with the menu, so focus on the next tick.
+    setTimeout(() => mobileSearchRef.current?.focus(), 0);
   };
 
   return (
@@ -203,14 +216,14 @@ export default function StorefrontHeader() {
             )}
           </div>
 
-          {/* Mobile search — goes to the search page (no inline expand) */}
-          <Link
-            to="/store/search"
+          {/* Mobile search — opens the mobile menu (its first item is the input) */}
+          <button
             aria-label={t("nav.search")}
+            onClick={openMobileSearch}
             className="flex h-10 w-10 items-center justify-center rounded-md text-white/80 transition-colors hover:bg-white/10 hover:text-white md:hidden"
           >
             <Search className="h-5 w-5" />
-          </Link>
+          </button>
 
           <Link
             to="/store/wishlist"
@@ -258,6 +271,24 @@ export default function StorefrontHeader() {
           className={`border-t border-white/10 ${isStarter ? "bg-neutral-800" : "bg-neutral-950"} md:hidden`}
         >
           <nav className="container flex flex-col py-3">
+            {/* Search first — it's the most used action on mobile */}
+            <form onSubmit={submitSearch} className="relative mb-2">
+              <button
+                type="submit"
+                aria-label={t("nav.search")}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-white/50"
+              >
+                <Search className="h-4 w-4" />
+              </button>
+              <input
+                ref={mobileSearchRef}
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder={t("nav.search")}
+                className="w-full rounded-md border border-white/15 bg-white/5 py-2.5 pl-9 pr-3 text-sm text-white placeholder-white/40 outline-none focus:border-white/30"
+              />
+            </form>
+
             <Link
               to="/store"
               className="py-3 text-sm font-medium text-white/70 hover:text-white"
@@ -300,21 +331,6 @@ export default function StorefrontHeader() {
             >
               {t("nav.about")}
             </Link>
-            <form onSubmit={submitSearch} className="relative mt-2">
-              <button
-                type="submit"
-                aria-label={t("nav.search")}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-white/50"
-              >
-                <Search className="h-4 w-4" />
-              </button>
-              <input
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder={t("nav.search")}
-                className="w-full rounded-md border border-white/15 bg-white/5 py-2 pl-9 pr-3 text-sm text-white placeholder-white/40 outline-none"
-              />
-            </form>
           </nav>
         </div>
       )}

@@ -802,6 +802,9 @@ export default {
     saved: "Banner saved",
     saveError: "Could not save the banner.",
     previewNote: "This is how the banner will look in your store:",
+    imageMobileLabel: "Mobile image (optional)",
+    imageMobileHint:
+      "Recommended: vertical or square format (e.g. 1080x1350). If you don't upload any, the desktop image will be used cropped.",
   },
   storeCategories: {
     title: "Categories",

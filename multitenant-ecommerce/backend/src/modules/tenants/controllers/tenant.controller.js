@@ -237,6 +237,8 @@ exports.getBannerSettings = catchAsync(async (req, res) => {
     banner: {
       enabled: b.enabled !== false, // default true
       imageUrl: b.imageUrl || null,
+      // Optional portrait crop for phones (falls back to imageUrl).
+      imageUrlMobile: b.imageUrlMobile || null,
       title: b.title || "",
       subtitle: b.subtitle || "",
       ctaText: b.ctaText || "",
@@ -248,11 +250,21 @@ exports.getBannerSettings = catchAsync(async (req, res) => {
 // PATCH /tenant/banner-settings  -> store owner saves their banner config.
 exports.updateBannerSettings = catchAsync(async (req, res) => {
   const tenant = req.tenant;
-  const { enabled, imageUrl, title, subtitle, ctaText, ctaLink } = req.body;
+  const {
+    enabled,
+    imageUrl,
+    imageUrlMobile,
+    title,
+    subtitle,
+    ctaText,
+    ctaLink,
+  } = req.body;
 
   tenant.banner = tenant.banner || {};
   if (enabled !== undefined) tenant.banner.enabled = Boolean(enabled);
   if (imageUrl !== undefined) tenant.banner.imageUrl = imageUrl || null;
+  if (imageUrlMobile !== undefined)
+    tenant.banner.imageUrlMobile = imageUrlMobile || null;
   if (title !== undefined) tenant.banner.title = title || null;
   if (subtitle !== undefined) tenant.banner.subtitle = subtitle || null;
   if (ctaText !== undefined) tenant.banner.ctaText = ctaText || null;
@@ -266,6 +278,7 @@ exports.updateBannerSettings = catchAsync(async (req, res) => {
     banner: {
       enabled: b.enabled !== false,
       imageUrl: b.imageUrl || null,
+      imageUrlMobile: b.imageUrlMobile || null,
       title: b.title || "",
       subtitle: b.subtitle || "",
       ctaText: b.ctaText || "",

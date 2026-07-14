@@ -27,17 +27,25 @@ export default function StoreHero() {
   const ctaText = banner.ctaText || t("banner.cta");
   const ctaLink = banner.ctaLink || "/store#productos";
   const imageUrl = banner.imageUrl || null;
+  const imageUrlMobile = banner.imageUrlMobile || null;
 
   return (
     <section className="relative w-full overflow-hidden border-b border-border">
       {/* Background: image or themed gradient */}
       {imageUrl ? (
         <>
-          <img
-            src={imageUrl}
-            alt=""
-            className="absolute inset-0 h-full w-full object-cover"
-          />
+          <picture>
+            {/* Phones get the portrait crop when the store uploaded one.
+                The browser only downloads the source it actually uses. */}
+            {imageUrlMobile && (
+              <source media="(max-width: 767px)" srcSet={imageUrlMobile} />
+            )}
+            <img
+              src={imageUrl}
+              alt=""
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+          </picture>
           {/* Dark overlay so the text is always legible over any image */}
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/45 to-black/10" />
         </>

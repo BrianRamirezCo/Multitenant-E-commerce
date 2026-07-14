@@ -66,7 +66,8 @@ const tenantSchema = new mongoose.Schema(
     // Homepage banner (configurable from the admin panel).
     banner: {
       enabled: { type: Boolean, default: true },
-      imageUrl: { type: String, default: null }, // uploaded to Cloudinary
+      imageUrl: { type: String, default: null },
+      imageUrlMobile: { type: String, default: null },
       title: { type: String, default: null },
       subtitle: { type: String, default: null },
       ctaText: { type: String, default: null }, // button label
