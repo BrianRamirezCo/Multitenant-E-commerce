@@ -106,6 +106,7 @@ const tenantSchema = new mongoose.Schema(
       returns: { type: String, default: null },
       terms: { type: String, default: null },
       privacy: { type: String, default: null },
+      contact: { type: String, default: null },
     },
   },
 

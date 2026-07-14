@@ -366,6 +366,7 @@ exports.getPages = catchAsync(async (req, res) => {
       returns: p.returns || "",
       terms: p.terms || "",
       privacy: p.privacy || "",
+      contact: p.contact || "",
     },
   });
 });
@@ -374,13 +375,14 @@ exports.getPages = catchAsync(async (req, res) => {
 // An empty string clears the field, so the storefront shows the default text.
 exports.updatePages = catchAsync(async (req, res) => {
   const tenant = req.tenant;
-  const { shipping, returns, terms, privacy } = req.body;
+  const { shipping, returns, terms, privacy, contact } = req.body;
 
   tenant.pages = tenant.pages || {};
   if (shipping !== undefined) tenant.pages.shipping = shipping?.trim() || null;
   if (returns !== undefined) tenant.pages.returns = returns?.trim() || null;
   if (terms !== undefined) tenant.pages.terms = terms?.trim() || null;
   if (privacy !== undefined) tenant.pages.privacy = privacy?.trim() || null;
+  if (contact !== undefined) tenant.pages.contact = contact?.trim() || null;
 
   await tenant.save();
 

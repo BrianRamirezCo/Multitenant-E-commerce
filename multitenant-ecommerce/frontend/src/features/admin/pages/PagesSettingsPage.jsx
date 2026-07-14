@@ -44,6 +44,7 @@ export default function PagesSettingsPage() {
     setForm({
       shipping: data.pages.shipping || "",
       returns: data.pages.returns || "",
+      returns: data.pages.contact || "",
       terms: data.pages.terms || "",
       privacy: data.pages.privacy || "",
     });

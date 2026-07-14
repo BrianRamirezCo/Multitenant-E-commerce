@@ -146,6 +146,7 @@ export default {
     warningBody:
       "Mientras un campo esté vacío, tu tienda muestra un texto general que le aclara al comprador que todavía no publicaste tus condiciones. Es importante que escribas las tuyas: los plazos de entrega, las zonas de envío y los plazos de cambio dependen de cada negocio y son tu responsabilidad frente al comprador.",
     usingDefault: "Usando texto genérico",
+    contact: "Contacto",
   },
   dashboard: {
     title: "Dashboard",
