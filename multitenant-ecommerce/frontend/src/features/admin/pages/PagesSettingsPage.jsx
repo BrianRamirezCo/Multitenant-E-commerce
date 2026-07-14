@@ -22,6 +22,7 @@ import {
 const FIELDS = [
   { key: "shipping", labelKey: "pagesAdmin.shipping" },
   { key: "returns", labelKey: "pagesAdmin.returns" },
+  { key: "contact", labelKey: "pagesAdmin.contact" },
   { key: "terms", labelKey: "pagesAdmin.terms" },
   { key: "privacy", labelKey: "pagesAdmin.privacy" },
 ];
