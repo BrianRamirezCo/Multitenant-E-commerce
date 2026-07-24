@@ -125,8 +125,17 @@ exports.listOrders = catchAsync(async (req, res) => {
 });
 
 // GET /orders/:id
+// Ownership check: a customer can only read THEIR OWN orders. Without this, any
+// logged-in shopper could read another buyer's order by guessing/iterating ids,
+// exposing name, address, phone and email. Admins see any order of the tenant.
+// Same filter listOrders already applies.
 exports.getOrder = catchAsync(async (req, res, next) => {
-  const order = await Order.findOne({ _id: req.params.id });
+  const filter = { _id: req.params.id };
+  if (req.user && req.user.role !== "admin") {
+    filter.customer = req.user._id;
+  }
+  const order = await Order.findOne(filter);
+  // 404 (not 403) on purpose: don't reveal that the order exists.
   if (!order) return next(new AppError("Order not found", 404));
   res.json({ status: "success", order });
 });

@@ -22,19 +22,39 @@ app.use(helmet());
 // In development, allow everything for convenience.
 const ROOT_DOMAIN = process.env.ROOT_DOMAIN || "yourapp.com";
 
+// Vercel generates a NEW hostname for every deployment
+// (my-app-<hash>-<team>.vercel.app). Listing them one by one in
+// CORS_EXTRA_ORIGINS is unmaintainable, so we allow the whole preview namespace
+// of OUR project via VERCEL_PREVIEW_SUFFIX (e.g. "-brian-ramirez-s-projects.vercel.app").
+//
+// It is deliberately NOT a blanket "*.vercel.app": with credentials enabled,
+// that would let any app deployed on Vercel talk to this API using a logged-in
+// user's cookies.
+const VERCEL_PREVIEW_SUFFIX = process.env.VERCEL_PREVIEW_SUFFIX || "";
+
 function isAllowedOrigin(origin) {
-  // Non-browser requests (curl, server-to-server) have no origin -> allow.
+  // Non-browser requests (curl, server-to-server, MercadoPago webhooks) have no
+  // origin -> allow. They aren't subject to the same-origin policy anyway.
   if (!origin) return true;
   if (process.env.NODE_ENV !== "production") return true;
 
   try {
-    const { hostname } = new URL(origin);
-    // Allow the apex domain and any subdomain of it (tenant stores).
+    const { protocol, hostname } = new URL(origin);
+    // Only ever trust HTTPS origins in production.
+    if (protocol !== "https:") return false;
+
+    // Apex domain and any subdomain of it (tenant stores).
     if (hostname === ROOT_DOMAIN || hostname.endsWith(`.${ROOT_DOMAIN}`)) {
       return true;
     }
-    // Allow extra origins listed in CORS_EXTRA_ORIGINS (comma-separated), e.g.
-    // the Vercel frontend domain or specific tenant custom domains.
+
+    // Our own Vercel deployments (production alias + every preview build).
+    if (VERCEL_PREVIEW_SUFFIX && hostname.endsWith(VERCEL_PREVIEW_SUFFIX)) {
+      return true;
+    }
+
+    // Explicit extra origins (comma-separated): the stable Vercel alias, or a
+    // tenant's custom domain.
     const extra = (process.env.CORS_EXTRA_ORIGINS || "")
       .split(",")
       .map((s) => s.trim())

@@ -24,9 +24,23 @@ exports.listTenants = catchAsync(async (req, res) => {
   res.json({ status: "success", total: tenants.length, tenants });
 });
 
-// PATCH /admin/tenants/:id  -> update store (theme, plan, status, MP credentials)
+// PATCH /admin/tenants/:id  -> update store (plan, status, domain, name)
+// Whitelist the updatable fields: passing req.body straight into findByIdAndUpdate
+// is mass assignment — it would let the caller overwrite anything in the document,
+// including mercadoPago.accessToken or legal acceptance records.
+const TENANT_ADMIN_UPDATABLE = ["name", "plan", "status", "customDomain"];
+
 exports.updateTenant = catchAsync(async (req, res, next) => {
-  const tenant = await Tenant.findByIdAndUpdate(req.params.id, req.body, {
+  const updates = {};
+  for (const field of TENANT_ADMIN_UPDATABLE) {
+    if (req.body[field] !== undefined) updates[field] = req.body[field];
+  }
+
+  if (Object.keys(updates).length === 0) {
+    return next(new AppError("No updatable fields provided.", 400));
+  }
+
+  const tenant = await Tenant.findByIdAndUpdate(req.params.id, updates, {
     new: true,
     runValidators: true,
   });

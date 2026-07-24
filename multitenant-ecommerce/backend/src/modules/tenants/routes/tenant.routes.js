@@ -1,7 +1,7 @@
 const express = require("express");
 const ctrl = require("../controllers/tenant.controller");
 const { protect, restrictTo } = require("../../auth/middlewares/auth");
-
+const AppError = require("../../../utils/AppError");
 /**
  * Two distinct routers:
  *  - adminRouter: platform superadmin operations (provision/suspend stores).
@@ -10,8 +10,29 @@ const { protect, restrictTo } = require("../../auth/middlewares/auth");
  *    Mounted INSIDE the tenant resolver (req.tenant is available).
  */
 
+/**
+ * Platform-level guard. These routes manage TENANTS THEMSELVES (list every
+ * store, change plans, overwrite MercadoPago credentials, suspend a store), so
+ * they must never be reachable by a store admin — let alone anonymously.
+ *
+ * Until there's a proper superadmin role, this is a shared secret in a header.
+ * If PLATFORM_ADMIN_KEY is not set, the routes are DENIED (fail closed): an
+ * unset env must never mean "wide open".
+ */
+function protectPlatformAdmin(req, res, next) {
+  const expected = process.env.PLATFORM_ADMIN_KEY;
+  if (!expected) {
+    return next(new AppError("Platform admin API is not configured.", 503));
+  }
+  const provided = req.headers["x-platform-key"];
+  if (!provided || provided !== expected) {
+    return next(new AppError("Not authorized.", 401));
+  }
+  next();
+}
+
 const adminRouter = express.Router();
-// adminRouter.use(protectSuperadmin); // implement a platform-level guard
+adminRouter.use(protectPlatformAdmin);
 adminRouter.post("/", ctrl.createTenant);
 adminRouter.get("/", ctrl.listTenants);
 adminRouter.patch("/:id", ctrl.updateTenant);
