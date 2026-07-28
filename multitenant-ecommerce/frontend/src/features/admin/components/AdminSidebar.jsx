@@ -35,6 +35,9 @@ import { useLogoutMutation } from "../../auth/authApi";
  * Admin sidebar. Grouped navigation, fully translated via i18n (labelKey).
  * Items requiring a higher plan render LOCKED (lock icon) instead of hidden,
  * exposing upsell opportunities.
+ *
+ * `onNavigate` (optional): called when a link or logout is clicked. Used by the
+ * mobile drawer in AdminLayout to close itself after navigating.
  */
 const SECTIONS = [
   {
@@ -116,7 +119,6 @@ const SECTIONS = [
         labelKey: "sidebar.appearance",
         icon: Palette,
       },
-
       { to: "/admin/banner", labelKey: "sidebar.banner", icon: ImageIcon },
       {
         to: "/admin/store-settings",
@@ -137,7 +139,7 @@ const SECTIONS = [
   },
 ];
 
-function SidebarItem({ item, plan, t }) {
+function SidebarItem({ item, plan, t, onNavigate }) {
   const locked = item.feature && !hasFeatureClient(plan, item.feature);
   const Icon = item.icon;
   const label = t(item.labelKey);
@@ -145,7 +147,7 @@ function SidebarItem({ item, plan, t }) {
   if (locked) {
     return (
       <div
-        className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground/50 cursor-not-allowed"
+        className="flex cursor-not-allowed items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground/50"
         title={t("common.locked")}
       >
         <Icon className="h-4 w-4 shrink-0" />
@@ -159,6 +161,7 @@ function SidebarItem({ item, plan, t }) {
     <NavLink
       to={item.to}
       end={item.end}
+      onClick={onNavigate}
       className={({ isActive }) =>
         cn(
           "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
@@ -174,7 +177,7 @@ function SidebarItem({ item, plan, t }) {
   );
 }
 
-export default function AdminSidebar() {
+export default function AdminSidebar({ onNavigate }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const tenant = useSelector((s) => s.tenant.info);
@@ -186,6 +189,7 @@ export default function AdminSidebar() {
     try {
       await logout().unwrap();
     } finally {
+      onNavigate?.();
       navigate("/admin/login");
     }
   };
@@ -208,7 +212,13 @@ export default function AdminSidebar() {
             )}
             <div className="space-y-1">
               {section.items.map((item) => (
-                <SidebarItem key={item.to} item={item} plan={plan} t={t} />
+                <SidebarItem
+                  key={item.to}
+                  item={item}
+                  plan={plan}
+                  t={t}
+                  onNavigate={onNavigate}
+                />
               ))}
             </div>
           </div>
@@ -224,7 +234,7 @@ export default function AdminSidebar() {
             <p className="truncate text-sm font-medium">
               {user?.name || t("sidebar.admin")}
             </p>
-            <p className="truncate text-xs text-muted-foreground capitalize">
+            <p className="truncate text-xs capitalize text-muted-foreground">
               {plan}
             </p>
           </div>

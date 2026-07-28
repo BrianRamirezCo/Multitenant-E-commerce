@@ -369,14 +369,41 @@ export default {
     notFound: "Producto no encontrado",
     addToCart: "Añadir al carrito",
     buyNow: "Comprar ahora",
-    outOfStock: "Sin stock",
+    addFavorite: "Favoritos",
+    share: "Compartir",
     quantity: "Cantidad",
-    description: "Descripción",
+    // Stock
     inStock: "{{n}} disponibles",
+    inStockShort: "En stock",
+    lowStock: "Quedan pocas unidades ({{n}})",
+    outOfStock: "Sin stock",
+    // Beneficios
     freeShipping: "Envío gratis",
+    warranty: "Garantía oficial",
+    returns: "Devoluciones fáciles",
     secure: "Pago seguro",
-    returns: "Devoluciones 30 días",
-    related: "También te puede interesar",
+    support: "Atención personalizada",
+    // Tabs
+    tabDescription: "Descripción",
+    tabSpecs: "Especificaciones",
+    tabReviews: "Opiniones",
+    tabFaq: "Preguntas frecuentes",
+    noDescription: "Este producto todavía no tiene una descripción.",
+    category: "Categoría",
+    availability: "Disponibilidad",
+    // FAQ
+    faq1Q: "¿Cuánto tarda el envío?",
+    faq1A:
+      "El costo y el plazo de envío se calculan al finalizar la compra según tu ubicación.",
+    faq2Q: "¿Puedo devolver el producto?",
+    faq2A:
+      "Por ley tenés 10 días corridos desde que recibís el producto para arrepentirte de la compra.",
+    faq3Q: "¿Los pagos son seguros?",
+    faq3A:
+      "Sí, los pagos se procesan de forma segura a través de Mercado Pago.",
+    // Carruseles
+    related: "Productos relacionados",
+    alsoBought: "Los clientes también compraron",
   },
   cart: {
     title: "Tu carrito",

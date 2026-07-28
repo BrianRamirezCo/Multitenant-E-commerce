@@ -1,33 +1,73 @@
-import { Outlet } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { Bell, Search } from 'lucide-react';
-import AdminSidebar from './AdminSidebar';
-import { Input } from '../../../components/ui/input';
-import { Button } from '../../../components/ui/button';
-import LanguageToggle from '../../../components/LanguageToggle';
+import { useState } from "react";
+import { Outlet } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { Bell, Search, Menu, X } from "lucide-react";
+import AdminSidebar from "./AdminSidebar";
+import { Input } from "../../../components/ui/input";
+import { Button } from "../../../components/ui/button";
+import LanguageToggle from "../../../components/LanguageToggle";
 
 /**
- * Admin panel layout: fixed sidebar + top bar + routed content.
- * The admin panel always uses the 'minimal' theme tokens for a neutral,
- * professional look regardless of the tenant's storefront theme.
+ * Admin panel layout: sidebar + top bar + routed content.
+ *
+ * Desktop (md+): sidebar is fixed on the left.
+ * Mobile: sidebar becomes an off-canvas drawer toggled by a hamburger button;
+ * a dark backdrop closes it, and navigating also closes it (onNavigate).
+ *
+ * The admin panel always uses the 'minimal' theme tokens for a neutral look
+ * regardless of the tenant's storefront theme.
  */
 export default function AdminLayout() {
   const tenant = useSelector((s) => s.tenant.info);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <div data-theme="minimal" className="flex h-screen overflow-hidden bg-secondary/30">
-      {/* Sidebar */}
-      <div className="hidden md:block shrink-0">
+    <div
+      data-theme="minimal"
+      className="flex h-screen overflow-hidden bg-secondary/30"
+    >
+      {/* --- Sidebar: fixed on desktop --- */}
+      <div className="hidden shrink-0 md:block">
         <AdminSidebar />
       </div>
 
-      {/* Main */}
+      {/* --- Sidebar: drawer on mobile --- */}
+      {mobileOpen && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 z-40 bg-black/50 md:hidden"
+            onClick={() => setMobileOpen(false)}
+            aria-hidden="true"
+          />
+          {/* Drawer */}
+          <div className="fixed inset-y-0 left-0 z-50 md:hidden">
+            <AdminSidebar onNavigate={() => setMobileOpen(false)} />
+          </div>
+        </>
+      )}
+
+      {/* --- Main --- */}
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Top bar */}
-        <header className="flex h-16 shrink-0 items-center gap-4 border-b border-border bg-background px-6">
+        <header className="flex h-16 shrink-0 items-center gap-4 border-b border-border bg-background px-4 md:px-6">
+          {/* Hamburger — only on mobile */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            aria-label="Abrir menú"
+            onClick={() => setMobileOpen(true)}
+          >
+            <Menu className="h-5 w-5" />
+          </Button>
+
           <div className="relative hidden w-full max-w-md sm:block">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input placeholder="Buscar pedidos, productos, clientes..." className="pl-9" />
+            <Input
+              placeholder="Buscar pedidos, productos, clientes..."
+              className="pl-9"
+            />
           </div>
           <div className="ml-auto flex items-center gap-2">
             <LanguageToggle />
@@ -35,14 +75,18 @@ export default function AdminLayout() {
               <Bell className="h-5 w-5" />
             </Button>
             <div className="hidden text-right sm:block">
-              <p className="text-sm font-medium leading-tight">{tenant?.name || 'Mi Tienda'}</p>
-              <p className="text-xs text-muted-foreground capitalize">{tenant?.plan || 'starter'}</p>
+              <p className="text-sm font-medium leading-tight">
+                {tenant?.name || "Mi Tienda"}
+              </p>
+              <p className="text-xs capitalize text-muted-foreground">
+                {tenant?.plan || "starter"}
+              </p>
             </div>
           </div>
         </header>
 
         {/* Content */}
-        <main className="flex-1 overflow-y-auto p-6">
+        <main className="flex-1 overflow-y-auto p-4 md:p-6">
           <Outlet />
         </main>
       </div>
