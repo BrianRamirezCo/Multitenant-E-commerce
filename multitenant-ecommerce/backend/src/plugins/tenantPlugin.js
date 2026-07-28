@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 /**
  * ============================================================================
@@ -19,18 +19,31 @@ const mongoose = require('mongoose');
  *
  * Why centralize this:
  *  Doing `Model.find({ tenantId })` by hand in every controller WILL eventually
- *  be forgotten in one place -> cross-tenant data leak. That is the single most
- *  catastrophic bug in a multitenant app. This plugin removes that risk.
+ *  be forgotten in one place -> cross-tenant data leak. This plugin removes that
+ *  risk.
+ *
+ * BEHAVIOUR WHEN THERE IS NO TENANT CONTEXT:
+ *  If there is no tenant in context (e.g. system jobs / cron like the abandoned
+ *  cart mailer, which intentionally scans across all tenants), the query runs
+ *  WITHOUT a tenant filter. This is deliberate — those jobs need cross-tenant
+ *  reads. It is NOT a silent safety hole for request handlers, because every
+ *  request goes through the tenant resolver, which always opens a context.
+ *  There is intentionally no `throw` here so as not to break system jobs.
+ *
+ * BEHAVIOUR WITH AN EXPLICIT tenantId IN THE QUERY:
+ *  If a query already carries a tenantId AND there is a tenant in context, the
+ *  context always wins: a query can never ask for a tenantId different from the
+ *  one it is scoped to. This prevents a future controller from accidentally
+ *  passing user-supplied input as tenantId and reading another tenant's data.
  *
  * FUTURE-PROOFING (database-per-tenant migration):
  *  The tenant context is abstracted here, not scattered through the codebase.
  *  When a large tenant needs its own database later, you swap the connection
- *  layer (route that tenant's models to a dedicated connection) WITHOUT
- *  rewriting any business logic. This is the "one seam done right" we talked about.
+ *  layer WITHOUT rewriting any business logic.
  */
 
 // AsyncLocalStorage holds the current tenant context for the lifetime of a request.
-const { AsyncLocalStorage } = require('async_hooks');
+const { AsyncLocalStorage } = require("async_hooks");
 const tenantContext = new AsyncLocalStorage();
 
 /**
@@ -59,7 +72,7 @@ function tenantPlugin(schema) {
   schema.add({
     tenantId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Tenant',
+      ref: "Tenant",
       required: true,
       index: true,
     },
@@ -67,38 +80,50 @@ function tenantPlugin(schema) {
 
   // Queries that should be auto-filtered by tenantId.
   const findHooks = [
-    'find',
-    'findOne',
-    'findOneAndUpdate',
-    'findOneAndDelete',
-    'findOneAndReplace',
-    'count',
-    'countDocuments',
-    'updateOne',
-    'updateMany',
-    'deleteOne',
-    'deleteMany',
+    "find",
+    "findOne",
+    "findOneAndUpdate",
+    "findOneAndDelete",
+    "findOneAndReplace",
+    "count",
+    "countDocuments",
+    "updateOne",
+    "updateMany",
+    "deleteOne",
+    "deleteMany",
   ];
 
   // 2. Inject tenantId into the filter of every read/update/delete query.
   findHooks.forEach((hook) => {
     schema.pre(hook, function () {
       const tenantId = getCurrentTenantId();
-      // If there is a tenant in context and the query has not already set it,
-      // force the filter. We do NOT silently skip when context is missing on
-      // tenant-scoped reads; that would be unsafe. See the throw below.
-      if (tenantId) {
-        // Respect an explicitly provided tenantId (e.g. internal cross-tenant tooling)
-        // only if it matches the context; otherwise enforce the context tenant.
-        if (!this.getQuery().tenantId) {
-          this.where({ tenantId });
-        }
+      if (!tenantId) {
+        // No context: system job / cron scanning across tenants. Intentionally
+        // run unfiltered (see header). Request handlers always have a context.
+        return;
+      }
+
+      const queryTenantId = this.getQuery().tenantId;
+
+      // The context tenant ALWAYS wins. If the query already carries a
+      // different tenantId, that's either a bug or an attempt to read another
+      // tenant's data — force the context tenant instead of trusting the input.
+      if (queryTenantId && String(queryTenantId) !== String(tenantId)) {
+        // Overwrite rather than throw: keeps the app resilient, and the query
+        // simply returns this tenant's data (never the foreign one).
+        this.setQuery({ ...this.getQuery(), tenantId });
+        return;
+      }
+
+      // No tenantId on the query yet: scope it to the current tenant.
+      if (!queryTenantId) {
+        this.where({ tenantId });
       }
     });
   });
 
   // 3. Stamp tenantId on new documents at save time.
-  schema.pre('save', function (next) {
+  schema.pre("save", function (next) {
     if (this.isNew && !this.tenantId) {
       const tenantId = getCurrentTenantId();
       if (tenantId) {
@@ -109,7 +134,7 @@ function tenantPlugin(schema) {
   });
 
   // 4. Handle insertMany (bulk inserts) which bypasses the save hook.
-  schema.pre('insertMany', function (next, docs) {
+  schema.pre("insertMany", function (next, docs) {
     const tenantId = getCurrentTenantId();
     if (tenantId && Array.isArray(docs)) {
       docs.forEach((doc) => {

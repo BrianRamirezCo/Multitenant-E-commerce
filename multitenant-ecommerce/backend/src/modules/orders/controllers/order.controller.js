@@ -103,13 +103,11 @@ exports.createOrder = catchAsync(async (req, res, next) => {
     status: "pending",
   });
 
-  // Register coupon redemption (best-effort; doesn't block the order).
-  if (couponDoc && appliedCode) {
-    await Coupon.updateOne(
-      { _id: couponDoc._id },
-      { $inc: { usedCount: 1 } },
-    ).catch(() => {});
-  }
+  // NOTE: coupon redemption (usedCount++) is intentionally NOT incremented here.
+  // Counting it at order creation would burn a use on every abandoned order that
+  // never gets paid. The redemption is registered when the order is actually
+  // PAID (see the payment webhook), using order.couponCode to find the coupon.
+  // This keeps `maxUses` meaningful (real redemptions, not attempts).
 
   res.status(201).json({ status: "success", order });
 });
@@ -192,3 +190,20 @@ exports.updateOrderStatus = catchAsync(async (req, res, next) => {
   await order.save();
   res.json({ status: "success", order });
 });
+// Called from the payment webhook when an order transitions to "paid".
+// Registers the coupon redemption exactly once, at payment time (not at
+// creation), so abandoned orders never consume a coupon use.
+exports.registerCouponRedemption = async (order, tenantId) => {
+  if (!order?.couponCode) return;
+  try {
+    await Coupon.updateOne(
+      { code: order.couponCode, tenantId },
+      { $inc: { usedCount: 1 } },
+    );
+  } catch (err) {
+    logger.error(
+      { err: err?.message, code: order.couponCode, orderId: order._id },
+      "failed to register coupon redemption",
+    );
+  }
+};

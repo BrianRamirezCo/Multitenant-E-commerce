@@ -7,6 +7,7 @@ const {
 } = require("../services/tokens");
 const catchAsync = require("../../../utils/catchAsync");
 const AppError = require("../../../utils/AppError");
+const logger = require("../../../config/logger");
 const crypto = require("crypto");
 const {
   sendPasswordResetEmail,
@@ -110,7 +111,10 @@ exports.register = catchAsync(async (req, res, next) => {
       store.name,
     )}</strong>! Ya podés explorar el catálogo y guardar tus favoritos.`,
   }).catch((err) =>
-    console.error("welcome email to customer failed:", err?.message),
+    logger.error(
+      { err: err?.message, tenantId: store._id },
+      "welcome email to customer failed",
+    ),
   );
 
   authResponse(res, user, 201);
